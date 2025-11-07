@@ -1,25 +1,22 @@
 import { expect } from "chai";
+import type { VotingTokenTest } from "../typechain-types/index.ts"; // важно использовать import type 
 import { network } from "hardhat";
 const { ethers } = await network.connect();
 
-let token: any;
+let token: VotingTokenTest;
 let [admin, addr1, addr2] = await ethers.getSigners();
 const tokenPrice = ethers.parseEther("0.1");
-const buyFee = 10 // 0.1 * 100 = 10
-const sellFee = 5
+const buyFee = 10; // 0.1 * 100 = 10
+const sellFee = 5;
 
-
-async function deployTestContract() {
+async function deployTestContract(): Promise<VotingTokenTest> {
   [admin, addr1, addr2] = await ethers.getSigners();
   const Token = await ethers.getContractFactory("VotingTokenTest");
-  const instance = await Token.deploy(tokenPrice, buyFee, sellFee);
+  const instance = (await Token.deploy(tokenPrice, buyFee, sellFee)) as VotingTokenTest;
   await instance.waitForDeployment();
-  console.log("✅ Test contract deployed at:", await instance.getAddress());
   return instance;
 }
-
 describe("VotingToken - Additional requirements", function () {
-
   before(async function () {
     token = await deployTestContract();
   });
@@ -47,8 +44,6 @@ describe("VotingToken - Additional requirements", function () {
   //   expect(await token.totalSupply()).to.equal(5n);
   // });
 
-
-
   // it("sell() should burn tokens and send back ETH", async function () {
   //   const userTokensBalance = await token.balances(addr1.address);
   //   const contractTokensBalance = await token.totalSupply();
@@ -69,9 +64,7 @@ describe("VotingToken - Additional requirements", function () {
   // });
 });
 
-
 describe("VotingToken - startVoting()", function () {
-
   let receipt: any, blockTime: bigint;
 
   beforeEach(async function () {
@@ -80,14 +73,14 @@ describe("VotingToken - startVoting()", function () {
     await (await token.giveBalanceForTest(addr1.address, 200n)).wait();
 
     const txPromise = token.connect(addr1).startVoting();
-    await expect(token.connect(addr1).startVoting())
-      .to.not.be.revertedWithCustomError(token, "InefficientTokens");
+    await expect(
+      token.connect(addr1).startVoting()
+    ).to.not.be.revertedWithCustomError(token, "InefficientTokens");
 
     receipt = await (await txPromise).wait();
 
     const block = await ethers.provider.getBlock(receipt.blockNumber);
     blockTime = BigInt(block!.timestamp);
-
   });
 
   it("should set votingStartedTime correctly", async function () {
@@ -100,18 +93,16 @@ describe("VotingToken - startVoting()", function () {
 
   it("should emit VotingStarted event", async function () {
     const iface = new ethers.Interface([
-      "event VotingStarted(uint256 indexed votingNumber, uint256 startTime)"
+      "event VotingStarted(uint256 indexed votingNumber, uint256 startTime)",
     ]);
     const event = iface.parseLog(receipt.logs[0]);
     expect(event!.name).to.equal("VotingStarted");
     expect(event!.args.votingNumber).to.equal(1n);
     expect(event!.args.startTime).to.equal(blockTime);
   });
-
 });
 
 describe("VotingToken - vote()", function () {
-
   let receipt: any;
 
   beforeEach(async function () {
@@ -125,18 +116,59 @@ describe("VotingToken - vote()", function () {
     receipt = await (await txPromise).wait();
   });
 
-  it("should prevent double participation through transfer", async function () {
-    await expect(token.connect(addr1).vote(ethers.parseEther("0.12")))
-      .to.not.be.revertedWithCustomError(token, "InefficientTokens");
-
+  it("Should prevent double participation through transfer", async function () {
     await expect(
       token.connect(addr1).transfer(addr2.address, 5n)
     ).to.be.revertedWithCustomError(token, "LockedUntilVotingEnds");
-
-    await expect(token.connect(addr2).vote(ethers.parseEther("0.21")))
-      .to.be.revertedWithCustomError(token, "InefficientTokens");
-
-
   });
 
+  it("Vote transaction succeeds only if user holds ≥ 0.05 % of total supply", async function () {
+    await expect(
+      token.connect(addr2).vote(ethers.parseEther("0.21"))
+    ).to.be.revertedWithCustomError(token, "InefficientTokens");
+
+    await expect(
+      token.connect(addr1).vote(ethers.parseEther("0.12"))
+    ).to.not.be.revertedWithCustomError(token, "InefficientTokens");
+  });
+});
+
+describe("VotingToken - endVoting()", function () {
+
+  let timeToVote: bigint;
+
+  beforeEach(async function () {
+    token = await deployTestContract();
+    await (await token.addTotalSupplyForTest(100000n)).wait();
+    await (await token.giveBalanceForTest(addr1.address, 200n)).wait();
+    await (await token.connect(addr1).startVoting()).wait();
+    timeToVote = await token.timeToVote();
+  });
+
+  it("should revert if called before timeToVote elapsed", async function () {
+    await expect(
+      token.connect(addr1).endVoting()
+    ).to.be.revertedWithCustomError(token, "VotingIsActive");
+  });
+
+  it("should allow anyone to call endVoting after timeToVote elapsed", async function () {
+    await ethers.provider.send("evm_increaseTime", [Number(timeToVote) + 1000]);
+    await ethers.provider.send("evm_mine");
+
+    await expect(token.connect(addr2).endVoting()).to.emit(
+      token,
+      "VotingEnded"
+    );
+  });
+
+  it("should correctly finalize voting, transfers should become unlocked", async function () {
+    await ethers.provider.send("evm_increaseTime", [Number(timeToVote) + 1000]);
+    await ethers.provider.send("evm_mine");
+
+    await (await token.connect(addr1).endVoting()).wait();
+
+    await expect(
+      token.connect(addr1).transfer(addr2.address, 10n)
+    ).to.not.be.revertedWithCustomError(token, "LockedUntilVotingEnds");
+  });
 });

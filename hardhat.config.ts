@@ -1,4 +1,5 @@
 import hardhatToolboxMochaEthersPlugin from "@nomicfoundation/hardhat-toolbox-mocha-ethers";
+import "@nomicfoundation/hardhat-typechain";
 import { configVariable, defineConfig } from "hardhat/config";
 
 export default defineConfig({
@@ -18,6 +19,9 @@ export default defineConfig({
         },
       },
     },
+  },
+  typechain: {
+    outDir: "typechain-types",
   },
   networks: {
     hardhatMainnet: {

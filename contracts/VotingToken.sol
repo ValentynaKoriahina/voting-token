@@ -23,7 +23,7 @@ contract VotingToken is IERC20 {
     Изменить неноль → другой неноль	5 000 gas	–
     Обнулить (неноль → 0)	5 000 gas – 15 000 refund
     */
-
+    uint256[50] private __gap;
     address public admin;
 
     uint256 buyFee;
@@ -61,6 +61,7 @@ contract VotingToken is IERC20 {
 
     // indexed позволяет фильтровать события по номеру голосования в логах.
     event VotingStarted(uint256 indexed votingNumber, uint256 startTime);
+    event VotingEnded(uint256 indexed votingNumber, uint256 endTime);
 
     function balanceOf(
         address _owner
@@ -80,6 +81,7 @@ contract VotingToken is IERC20 {
     /*
        transferFrom используется, когда кто-то переводит чужие токены с разрешения владельца.
     */
+    // ! запретить во время голосования?
     function transferFrom(
         address _from,
         address _to,
@@ -203,6 +205,7 @@ contract VotingToken is IERC20 {
 
         delete proposedPrices;
         votingStartedTime = 0;
+        emit VotingEnded(votingNumber, block.timestamp);
     }
 
     function votingActive() public view returns (bool) {
@@ -296,10 +299,14 @@ contract VotingToken is IERC20 {
 
 //TODO Что дальше
 /**
-Использовать TypeChain для генерации типов контрактов в тестах.
+////Использовать TypeChain для генерации типов контрактов в тестах.
 Контракт должен быть обновляемым (upgradeable).
-Функцию endVoting может вызвать любой пользователь, но правила должны проверять, что она вызывается только после истечения времени timeToVote.
+//// Функцию endVoting может вызвать любой пользователь, но правила
+//// должны проверять, что она вызывается только после истечения времени timeToVote.
 Контракты должны быть задеплоены в тестовую сеть Sepolia и проверены на Etherscan (sepolia.etherscan.io).
+
+
+
 ограничение на сумму ставки
 ограничить функции правом администратора
 Проверка перед сжиганием комиссий if (balances[address(this)] < accumulatedFees) revert InefficientBalance();
@@ -313,7 +320,12 @@ contract VotingToken is IERC20 {
 4.  Ethers.js + hardhat 
 5.  Gas 
 6.  Memoization pattern 
- 
+1️⃣	Результат голосования (yes/no или totalVotes)	Итоговое количество голосов для данного votingNumber	Вместо пересчёта каждого раза по mapping(address → voteAmount) можно хранить промежуточные суммы → меньше газа и быстрее итоговая функция endVoting()
+2️⃣	Минимальный порог голосов (minTokensForVoting)	Один раз вычислить при startVoting() и сохранить	Не пересчитывать (totalSupply * 5) / 10000 при каждом вызове vote()
+3️⃣	Результат tokenPrice или fee перерасчёта	Если формула фиксированная, можно кешировать итог для заданного периода	Сокращает дублируемые арифметические операции при buy() / sell()
+4️⃣	Адреса уже проверенных участников	Хранить в mapping(address => bool) результат проверки “участвовал / нет”	При каждом vote() не нужно снова искать в массиве или в другой структуре данных
+5️⃣	Итоговое значение balanceOf при блокировке	Кешировать значение баланса, который используется для расчёта веса голоса	Избегает повторных обращений к storage (дорогих по gas)
+6️⃣	Timestamp окончания голосования	Вычислить votingStartedTime + timeToVote и сохранить в переменной	При каждом вызове endVoting() не нужно пересчитывать — просто сравнивать с заранее вычисленным временем
 Problem solved: 
 -  Problem with the cycles, O(N) functions that are dependent on users. 
 */
