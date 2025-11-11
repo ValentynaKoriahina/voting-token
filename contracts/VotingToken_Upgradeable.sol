@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+
 import "./VotingToken_UUPSproxyStorage.sol";
+import "./Initializable.sol";
 import "./IERC20.sol";
 
-contract VotingToken is IERC20, VotingToken_UUPSproxyStorage {
+contract VotingToken_Upgradeable is IERC20, VotingToken_UUPSproxyStorage, Initializable  {
     error InefficientETHForBuying();
     error InefficientETHInContract();
     error ZeroTokenAmount();
@@ -24,9 +26,6 @@ contract VotingToken is IERC20, VotingToken_UUPSproxyStorage {
     Изменить неноль → другой неноль	5 000 gas	–
     Обнулить (неноль → 0)	5 000 gas – 15 000 refund
     */
-    uint256[50] private __gap;
-    address public admin;
-
     uint256 buyFee;
     uint256 sellFee;
     uint256 constant fee_denominator = 10000; // 10000 = масштаб для дробных процентов (1% = 100)
@@ -52,12 +51,15 @@ contract VotingToken is IERC20, VotingToken_UUPSproxyStorage {
     mapping(address => uint256) public balances;
     mapping(address => mapping(address => uint256)) public allowances;
 
-    constructor(uint256 _tokenPrice, uint256 _buyFee, uint256 _sellFee) {
-        admin = msg.sender;
+    // обязательное требование UUPS/Proxy архитектуры (вместо конструктора)
+    function initialize (
+        uint256 _tokenPrice,
+        uint256 _buyFee,
+        uint256 _sellFee
+    ) external initializer onlyAdmin {
         tokenPrice = _tokenPrice;
         buyFee = _buyFee;
         sellFee = _sellFee;
-        lastBurnTime = block.timestamp;
     }
 
     // indexed позволяет фильтровать события по номеру голосования в логах.
@@ -262,18 +264,15 @@ contract VotingToken is IERC20, VotingToken_UUPSproxyStorage {
         emit Transfer(msg.sender, address(0), amount);
     }
 
-    function setBuyFee(uint256 _newFee) external {
-        if (msg.sender != admin) revert OnlyAdmin();
+    function setBuyFee(uint256 _newFee) external onlyAdmin {
         buyFee = _newFee;
     }
 
-    function setSellFee(uint256 _newFee) external {
-        if (msg.sender != admin) revert OnlyAdmin();
+    function setSellFee(uint256 _newFee) external onlyAdmin {
         sellFee = _newFee;
     }
 
-    function burnAccumulatedFees() external {
-        if (msg.sender != admin) revert OnlyAdmin();
+    function burnAccumulatedFees() external onlyAdmin{
         if (block.timestamp < lastBurnTime + 7 days) revert TooEarlyToBurn();
         totalSupply -= accumulatedFees;
         balances[address(this)] -= accumulatedFees; // ! Лучше отправлять на "0"-адресс

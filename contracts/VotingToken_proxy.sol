@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 
-contract SimpleProxy {
+contract Proxy {
     address public implementation;
     address public admin;
 

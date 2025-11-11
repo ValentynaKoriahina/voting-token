@@ -6,7 +6,7 @@ import type { TypedContractEvent, TypedDeferredTopicFilter, TypedEventLog, Typed
   
 
   export interface VotingTokenTestInterface extends Interface {
-    getFunction(nameOrSignature: "accumulatedFees" | "addTotalSupplyForTest" | "admin" | "allowance" | "allowances" | "approve" | "balanceOf" | "balances" | "burnAccumulatedFees" | "buy" | "endVoting" | "giveBalanceForTest" | "hasVoted" | "lastBurnTime" | "proposedPrices" | "sell" | "setBuyFee" | "setSellFee" | "startVoting" | "timeToVote" | "tokenPrice" | "totalSupply" | "transfer" | "transferFrom" | "vote" | "votes" | "votingActive" | "votingNumber" | "votingStartedTime"): FunctionFragment;
+    getFunction(nameOrSignature: "accumulatedFees" | "addTotalSupplyForTest" | "admin" | "allowance" | "allowances" | "approve" | "balanceOf" | "balances" | "burnAccumulatedFees" | "buy" | "endVoting" | "giveBalanceForTest" | "hasVoted" | "lastBurnTime" | "proposedPrices" | "sell" | "setBuyFee" | "setSellFee" | "startVoting" | "timeToVote" | "tokenPrice" | "totalSupply" | "transfer" | "transferFrom" | "upgradeTo" | "vote" | "votes" | "votingActive" | "votingNumber" | "votingStartedTime"): FunctionFragment;
 
     getEvent(nameOrSignatureOrTopic: "Approval" | "Transfer" | "VotingEnded" | "VotingStarted"): EventFragment;
 
@@ -34,6 +34,7 @@ encodeFunctionData(functionFragment: 'tokenPrice', values?: undefined): string;
 encodeFunctionData(functionFragment: 'totalSupply', values?: undefined): string;
 encodeFunctionData(functionFragment: 'transfer', values: [AddressLike, BigNumberish]): string;
 encodeFunctionData(functionFragment: 'transferFrom', values: [AddressLike, AddressLike, BigNumberish]): string;
+encodeFunctionData(functionFragment: 'upgradeTo', values: [AddressLike]): string;
 encodeFunctionData(functionFragment: 'vote', values: [BigNumberish]): string;
 encodeFunctionData(functionFragment: 'votes', values: [BigNumberish, BigNumberish]): string;
 encodeFunctionData(functionFragment: 'votingActive', values?: undefined): string;
@@ -64,6 +65,7 @@ decodeFunctionResult(functionFragment: 'tokenPrice', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'totalSupply', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'transfer', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'transferFrom', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'upgradeTo', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'vote', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'votes', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'votingActive', data: BytesLike): Result;
@@ -346,6 +348,14 @@ decodeFunctionResult(functionFragment: 'votingStartedTime', data: BytesLike): Re
     
 
     
+    upgradeTo: TypedContractMethod<
+      [newImplementation: AddressLike, ],
+      [void],
+      'nonpayable'
+    >
+    
+
+    
     vote: TypedContractMethod<
       [price: BigNumberish, ],
       [void],
@@ -506,6 +516,11 @@ getFunction(nameOrSignature: 'transfer'): TypedContractMethod<
 getFunction(nameOrSignature: 'transferFrom'): TypedContractMethod<
       [_from: AddressLike, _to: AddressLike, _value: BigNumberish, ],
       [boolean],
+      'nonpayable'
+    >;
+getFunction(nameOrSignature: 'upgradeTo'): TypedContractMethod<
+      [newImplementation: AddressLike, ],
+      [void],
       'nonpayable'
     >;
 getFunction(nameOrSignature: 'vote'): TypedContractMethod<

@@ -1,24 +1,51 @@
 import { expect } from "chai";
-import type { VotingTokenTest } from "../typechain-types/index.ts"; // важно использовать import type 
+import type { VotingTokenTest } from "../typechain-types/index.js"; // важно использовать import type 
+import type { VotingTokenTest_Upgradeable } from "../typechain-types/index.js";
 import { network } from "hardhat";
 const { ethers } = await network.connect();
 
-let token: VotingTokenTest;
+let token: VotingTokenTest_Upgradeable;
+let logic, proxy;
 let [admin, addr1, addr2] = await ethers.getSigners();
 const tokenPrice = ethers.parseEther("0.1");
 const buyFee = 10; // 0.1 * 100 = 10
 const sellFee = 5;
 
-async function deployTestContract(): Promise<VotingTokenTest> {
-  [admin, addr1, addr2] = await ethers.getSigners();
-  const Token = await ethers.getContractFactory("VotingTokenTest");
-  const instance = (await Token.deploy(tokenPrice, buyFee, sellFee)) as VotingTokenTest;
-  await instance.waitForDeployment();
-  return instance;
+async function deployProxyWithLogic() {
+  const [admin] = await ethers.getSigners();
+
+  // 1) Деплой логики БЕЗ аргументов конструктора
+  const Logic = await ethers.getContractFactory("VotingTokenTest_Upgradeable");
+  const logic = await Logic.deploy();        // ✅ без аргументов
+  await logic.waitForDeployment();
+
+  // 2) Деплой прокси, передаём адрес логики и администратора
+  const Proxy = await ethers.getContractFactory("VotingToken_UUPSproxy");
+  const proxy = await Proxy.deploy(
+    await logic.getAddress(),
+    admin.address
+  );
+  await proxy.waitForDeployment();
+
+  // 3) Привязываем ABI логики к адресу прокси
+  const token = await ethers.getContractAt(
+    "VotingTokenTest_Upgradeable",
+    await proxy.getAddress()
+  );
+
+  // 4) Вызываем initialize вместо конструктора (один раз)
+  await token.connect(admin).initialize(
+    tokenPrice,
+    buyFee,
+    sellFee
+  );
+
+  return { token, logic, proxy, admin };
 }
-describe("VotingToken - Additional requirements", function () {
+
+describe("VotingTokenTest_Upgradeable - Additional requirements", function () {
   before(async function () {
-    token = await deployTestContract();
+    ({ token, logic, proxy, admin } = await deployProxyWithLogic());
   });
 
   it("buy() should revert on inefficient amount", async function () {
@@ -33,42 +60,13 @@ describe("VotingToken - Additional requirements", function () {
       "ZeroTokenAmount"
     );
   });
-
-  // it("buy() should mints tokens proportional to ETH sent", async function () {
-  //   const amountEther = ethers.parseEther("0.3");
-  //   const tokenPrice = await token.tokenPrice();
-  //   await token.connect(addr1).buy({ value: amountEther });
-  //   const expected = amountEther / tokenPrice;
-
-  //   expect(await token.balanceOf(addr1.address)).to.equal(expected);
-  //   expect(await token.totalSupply()).to.equal(5n);
-  // });
-
-  // it("sell() should burn tokens and send back ETH", async function () {
-  //   const userTokensBalance = await token.balances(addr1.address);
-  //   const contractTokensBalance = await token.totalSupply();
-  //   const signersBalance = await ethers.provider.getBalance(addr1.address);
-
-  //   await token.connect(addr1).sell(2n);
-
-  //   const userTokensBalanceAfter = userTokensBalance - 2n;
-  //   const contractTokensBalanceAfter = contractTokensBalance - 2n;
-
-  //   expect(await token.balanceOf(addr1.address)).to.equal(
-  //     userTokensBalanceAfter
-  //   );
-  //   expect(await token.totalSupply()).to.equal(contractTokensBalanceAfter);
-  //   expect(await ethers.provider.getBalance(addr1.address)).to.be.gt(
-  //     signersBalance
-  //   );
-  // });
 });
 
 describe("VotingToken - startVoting()", function () {
   let receipt: any, blockTime: bigint;
 
   beforeEach(async function () {
-    token = await deployTestContract();
+    ({ token } = await deployProxyWithLogic());
     await (await token.addTotalSupplyForTest(100000n)).wait();
     await (await token.giveBalanceForTest(addr1.address, 200n)).wait();
 
@@ -106,7 +104,7 @@ describe("VotingToken - vote()", function () {
   let receipt: any;
 
   beforeEach(async function () {
-    token = await deployTestContract();
+    ({ token } = await deployProxyWithLogic());
     await (await token.addTotalSupplyForTest(100000)).wait();
     await (await token.giveBalanceForTest(addr1.address, 200n)).wait();
     await (await token.giveBalanceForTest(addr2.address, 10n)).wait();
@@ -138,7 +136,7 @@ describe("VotingToken - endVoting()", function () {
   let timeToVote: bigint;
 
   beforeEach(async function () {
-    token = await deployTestContract();
+    ({ token } = await deployProxyWithLogic());
     await (await token.addTotalSupplyForTest(100000n)).wait();
     await (await token.giveBalanceForTest(addr1.address, 200n)).wait();
     await (await token.connect(addr1).startVoting()).wait();

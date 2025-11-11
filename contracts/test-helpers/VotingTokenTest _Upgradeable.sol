@@ -1,14 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
+import "../Initializable.sol";
+import "../VotingToken_UUPSproxyStorage.sol";
+import "../VotingToken_Upgradeable.sol";
 
-import "../../contracts/VotingToken.sol";
-
-contract VotingTokenTest is VotingToken {
-    constructor(
-        uint256 _tokenPrice,
-        uint256 _buyFee,
-        uint256 _sellFee
-    ) VotingToken(_tokenPrice, _buyFee, _sellFee) {}
+// Ensure VotingToken_Upgradeable is defined in VotingToken_Upgradeable.sol
+contract VotingTokenTest_Upgradeable is VotingToken_Upgradeable {
 
     function giveBalanceForTest(address who, uint256 amount) external {
         balances[who] = amount;

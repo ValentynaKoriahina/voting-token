@@ -13,14 +13,13 @@ async function deployTestContract() {
   const Token = await ethers.getContractFactory("VotingTokenTest");
   const instance = await Token.deploy(tokenPrice, buyFee, sellFee);
   await instance.waitForDeployment();
-  console.log("✅ Test contract deployed at:", await instance.getAddress());
+  // console.log("Test contract deployed at:", await instance.getAddress());
   return instance;
 }
 
 describe("VotingToken - Main interface", function () {
   before(async function () {
     token = await deployTestContract();
-
   });
 
 
@@ -28,7 +27,6 @@ describe("VotingToken - Main interface", function () {
     const tx = await token.giveBalanceForTest(addr1.address, 10n);
     await tx.wait();
     const balance = await token.balanceOf(addr1.address);
-    console.log("💰 addr1 balance:", balance.toString());
     expect(balance).to.equal(10n);
   });
 
