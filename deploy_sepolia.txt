@@ -1,0 +1,18 @@
+PS C:\Users\Alya\Desktop\RedDuck\voting-token> npx hardhat run scripts/deploy_uups.ts --network sepolia
+[dotenv@17.2.3] injecting env (3) from .env -- tip: ⚙️  override existing env vars with { override: true }
+Nothing to compile
+Nothing to compile
+
+🚀 Начинаем деплой в сеть Sepolia...
+Адрес деплойера: 0xdcB17491572ed44B7414e2209faD42c8F9fa0D79
+Баланс: 0.0888052 ETH
+Логика (implementation) задеплоена по адресу: 0x242CC5D5935Cc7e02CC9dE9DB75d2f4B980CaDE8
+Прокси задеплоен по адресу: 0x4C822fC45921f80E1c9b491DdDb0a0e3CefA60f2
+Инициализация контракта...
+✅ Контракт успешно инициализирован!
+====================================
+Логика (implementation): 0x242CC5D5935Cc7e02CC9dE9DB75d2f4B980CaDE8
+Прокси: 0x4C822fC45921f80E1c9b491DdDb0a0e3CefA60f2
+Админ (EIP-1967): 0xdcB17491572ed44B7414e2209faD42c8F9fa0D79
+====================================
+PS C:\Users\Alya\Desktop\RedDuck\voting-token> 
