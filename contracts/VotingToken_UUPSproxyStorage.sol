@@ -20,7 +20,7 @@ abstract contract VotingToken_UUPSproxyStorage {
         }
     }
 
-    function _setImplementation(address newImpl) internal {
+function _setImplementation(address newImpl) internal {
         assembly {
             sstore(_IMPLEMENTATION_SLOT, newImpl)
         }

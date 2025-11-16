@@ -48,12 +48,6 @@ describe("VotingTokenTest_Upgradeable - Additional requirements", function () {
     ({ token, logic, proxy, admin } = await deployProxyWithLogic());
   });
 
-  it("buy() should revert on inefficient amount", async function () {
-    await expect(
-      token.connect(addr1).buy({ value: ethers.parseEther("0.05") })
-    ).to.be.revertedWithCustomError(token, "InefficientETHForBuying");
-  });
-
   it("sell() should revert if tokens are not specified", async function () {
     await expect(token.connect(addr1).sell(0n)).to.be.revertedWithCustomError(
       token,

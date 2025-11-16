@@ -2,23 +2,32 @@
 pragma solidity ^0.8.20;
 
 abstract contract Initializable {
+    error AlreadyInitialized();
+
     bool private _initialized;
     bool private _initializing;
 
     modifier initializer() {
-        require(!_initialized || _initializing, "Already initialized");
-        bool isTopLevelCall = !_initializing;
-        if (isTopLevelCall) {
+        if (_initialized && !_initializing) {
+            revert AlreadyInitialized();
+        }
+
+        bool isTop = !_initializing;
+
+        if (isTop) {
             _initializing = true;
             _initialized = true;
         }
+
         _;
-        if (isTopLevelCall) {
+
+        if (isTop) {
             _initializing = false;
         }
     }
 
-    function initialized() public view returns (bool) {
-        return _initialized;
+    // Запрещает initialize() для имплементации
+    function _disableInitializers() internal {
+        _initialized = true;
     }
 }

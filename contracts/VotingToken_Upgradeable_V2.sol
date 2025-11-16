@@ -5,7 +5,7 @@ import "./VotingToken_UUPSproxyStorage.sol";
 import "./Initializable.sol";
 import "./IERC20.sol";
 
-contract VotingToken_Upgradeable is
+contract VotingToken_Upgradeable_V2 is
     IERC20,
     VotingToken_UUPSproxyStorage,
     Initializable
@@ -31,12 +31,12 @@ contract VotingToken_Upgradeable is
     Обнулить (неноль → 0)	5 000 gas – 15 000 refund
     */
 
-    uint256 public tokenPrice; // 10000000000000000 wei = 1 ETH
-    uint256 public buyFee;
-    uint256 public sellFee;
+    uint256 public tokenPrice; // wei
+    uint256 public buyFee; // wei
+    uint256 public sellFee; // wei
     uint256 public lastBurnTime;
 
-    uint256 constant fee_denominator = 10000; // 10000 = масштаб для дробных процентов (1% = 100)
+    uint256 constant fee_denominator = 10000; // 10000 = масштаб для дробных процентов в "basis points" (bps) (10000 bps = 100%)
     uint256 public accumulatedFees;
 
     uint256 public totalSupply;
@@ -66,16 +66,16 @@ contract VotingToken_Upgradeable is
         uint256 _tokenPrice,
         uint256 _buyFee,
         uint256 _sellFee
-    ) external initializer {
+    ) external initializer onlyAdmin {
         tokenPrice = _tokenPrice;
         buyFee = _buyFee;
         sellFee = _sellFee;
         lastBurnTime = block.timestamp;
     }
 
-    // indexed позволяет фильтровать события по номеру голосования в логах.
     event VotingStarted(uint256 indexed votingNumber, uint256 startTime);
     event VotingEnded(uint256 indexed votingNumber, uint256 endTime);
+    event Buy(address indexed buyer, uint256 ethSpent, uint256 netTokens, uint256 feeTokens);
 
     function balanceOf(
         address _owner
@@ -95,7 +95,6 @@ contract VotingToken_Upgradeable is
     /*
        transferFrom используется, когда кто-то переводит чужие токены с разрешения владельца.
     */
-    // ! запретить во время голосования?
     function transferFrom(
         address _from,
         address _to,
@@ -106,7 +105,6 @@ contract VotingToken_Upgradeable is
         proceedTransfer(_from, _value, _to);
         return (true);
     }
-
     function proceedTransfer(
         address _from,
         uint256 _value,
@@ -115,7 +113,7 @@ contract VotingToken_Upgradeable is
         if (balances[_from] < _value) revert InefficientBalance();
         balances[_from] -= _value;
         balances[_to] += _value;
-        emit Transfer(_from, _to, _value); // Стандартное событие ERC-20
+        emit Transfer(_from, _to, _value);
     }
 
     // Устанавливаем разрешение для другого адреса тратить токены владельца
@@ -123,7 +121,6 @@ contract VotingToken_Upgradeable is
         address _spender,
         uint256 _value
     ) external override returns (bool success) {
-        if (_spender == address(0)) revert InvalidSpender();
         address _owner = msg.sender;
         allowances[_owner][_spender] = _value;
         emit Approval(_owner, _spender, _value);
@@ -169,7 +166,7 @@ contract VotingToken_Upgradeable is
     }
 
     /** startVoting должен изменить votingStartedTime, 
-    votingNumber, и     вызвать событие VotingStarted. */
+    votingNumber, и вызвать событие VotingStarted. */
     function startVoting() public {
         if (balances[msg.sender] < minTokenForStartVoting())
             revert InefficientTokens();
@@ -181,9 +178,7 @@ contract VotingToken_Upgradeable is
 
     /*
        Завершение голосования.
-       Можно вызвать только после окончания установленного времени.
-       стоит ли winningPrice определять оффчейн (// ! безопасно ли?)
-       
+      
        Как обычно решают
 
             Ограничивают количество элементов.
@@ -236,22 +231,51 @@ contract VotingToken_Upgradeable is
     }
 
     function buy() public payable notFrozen(msg.sender) {
-        if (msg.value < tokenPrice) revert InefficientETHForBuying();
+        require(msg.value > 0, "No ETH sent"); //!!!!!!!!!!!!!!!!!
+        uint256 tokens = (msg.value * 1e18) / tokenPrice; // Токены ERC-20 тоже имеют 18 знаков "после запятой"
 
-        uint256 tokens = (msg.value * 1e18) / tokenPrice;
+        // подстановки:
+        // * tokens =
+        // 50_000_000_000_000_000 * 1e18 = 50_000_000_000_000_000_000000000000000000 /
+        //                       2_000_000_000_000_000 = 25_000_000_000_000_000_000 (токена в масштабе wei )
+        // 25_000_000_000_000_000_000 / 1e18  = 25 токенов
+
+        // * или проверка через простую математику
+        // 0.05 ETH / 0.002 ETH = 25 токенов
 
         // TODO Проверка если результат округления дал 0 токенов — отклоняем транзакцию
+
         uint256 fee = (tokens * buyFee) / fee_denominator;
+        // * fee
+        //  = 25_000_000_000_000_000_000 tokens * 500 buyFee = 12_500_000_000_000_000_000_000 /
+        //                                 / 10_000 fee_denominator = 1_250_000_000_000_000_000 токена
+        //
+        // 1_250_000_000_000_000_000 / 1e18 = 1.25
+        // * или проверка через простую математику
+        // 25 * 0.05 = 1.25
+
         uint256 netTokens = tokens - fee;
+        // * проверка через простую математику
+        // 25 токенов - 1,25 fee токенов =>  23.75 * 1e18 = 23,750,000,000,000,000,000 (токена в масштабе wei)
 
         balances[msg.sender] += netTokens;
         balances[address(this)] += fee;
         totalSupply += tokens;
         accumulatedFees += fee;
 
+        // Mint чистых токенов покупателю
+        emit Transfer(address(0), msg.sender, netTokens);
+
+        // Mint комиссии (тоже часть totalSupply)
+        emit Transfer(address(0), address(this), fee);
+
+        // Event покупки (чисто для внешних систем)
+        emit Buy(msg.sender, msg.value, netTokens, fee);
+
         emit Transfer(address(0), msg.sender, netTokens);
     }
 
+    // ограничение на продажу, на сколько важно? [1]
     function sell(uint256 amount) public notFrozen(msg.sender) {
         // TODO - модификатор nonReentrant (не даёт функции выполняться повторно, пока она не завершилась)
         if (amount == 0) revert ZeroTokenAmount();
@@ -261,8 +285,6 @@ contract VotingToken_Upgradeable is
         uint256 netTokens = amount - fee;
 
         uint256 ethAmount = (netTokens * tokenPrice) / 1e18;
-        if (address(this).balance < ethAmount)
-            revert InefficientETHInContract();
 
         balances[msg.sender] -= amount;
         balances[address(this)] += fee;
@@ -288,20 +310,19 @@ contract VotingToken_Upgradeable is
     function burnAccumulatedFees() external {
         if (block.timestamp < lastBurnTime + 7 days) revert TooEarlyToBurn();
         totalSupply -= accumulatedFees;
-        balances[address(this)] -= accumulatedFees; // ! Лучше отправлять на "0"-адресс
-
-        emit Transfer(address(this), address(0), accumulatedFees);
+        balances[address(this)] -= accumulatedFees;
 
         accumulatedFees = 0;
         lastBurnTime = block.timestamp;
+        emit Transfer(address(this), address(0), accumulatedFees);
     }
 
     modifier onlyAdmin() {
-        require(msg.sender == _getAdmin(), "Not admin");
+        require(msg.sender == _getAdmin(), OnlyAdmin());
         _;
     }
 
-    // --- UUPS: upgrade logic ---
+    // UUPS: upgrade logic
     function upgradeTo(address newImplementation) external onlyAdmin {
         require(newImplementation.code.length > 0, "Not a contract");
         require(newImplementation != _getImplementation(), "Same impl");
@@ -317,15 +338,19 @@ contract VotingToken_Upgradeable is
 
 */
 
-// ?
+// ??????
 /**
-Что делать, если откат транзакции делает вложенная фукнция
+Что, если откат транзакции делает вложенная фукнция
+выгодно ли очищать маппинги или лучше использовать раунды?
+[1] На период активного голосования запрещается выполнять sell для пользователей, которые уже проголосовали.
+    Это сохраняет честный вес голоса. Это делает голосование консистентным и не позволяет манипулировать ценой.
+    
  */
 
 //TODO Что дальше
 /**
 ////Использовать TypeChain для генерации типов контрактов в тестах.
-Контракт должен быть обновляемым (upgradeable).
+//// Контракт должен быть обновляемым (upgradeable).
 //// Функцию endVoting может вызвать любой пользователь, но правила
 //// должны проверять, что она вызывается только после истечения времени timeToVote.
 Контракты должны быть задеплоены в тестовую сеть Sepolia и проверены на Etherscan (sepolia.etherscan.io).

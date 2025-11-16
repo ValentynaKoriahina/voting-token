@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 import "./VotingToken_UUPSproxyStorage.sol";
 
-contract VotingToken_UUPSproxy is VotingToken_UUPSproxyStorage {
+contract VotingToken_UUPSproxy is VotingToken_UUPSproxyStorage{
     event Upgraded(
         address indexed previousImplementation,
         address indexed newImplementation
