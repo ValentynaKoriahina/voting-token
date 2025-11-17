@@ -24,6 +24,10 @@ contract VotingToken_Upgradeable_V2 is
     error LockedUntilVotingEnds();
     error AllowanceExceeded();
     error ETHTransferFailed();
+    error NoETHsent();
+    error NotAContract();
+    error SameImplementation();
+    error ReentrantCall();
 
     /* 
     Записать 0 → неноль	20 000 gas	–
@@ -55,10 +59,14 @@ contract VotingToken_Upgradeable_V2 is
     mapping(address => uint256) public balances;
     mapping(address => mapping(address => uint256)) public allowances;
 
+    uint256 private constant _NOT_ENTERED = 1;
+    uint256 private constant _ENTERED = 2;
+    uint256 private _status;
+
     uint256[50] private __gap;
 
     constructor() {
-        _disableInitializers(); // запретить initialize() на имплементации
+        _disableInitializers();
     }
 
     // обязательное требование UUPS/Proxy архитектуры (вместо конструктора)
@@ -75,7 +83,12 @@ contract VotingToken_Upgradeable_V2 is
 
     event VotingStarted(uint256 indexed votingNumber, uint256 startTime);
     event VotingEnded(uint256 indexed votingNumber, uint256 endTime);
-    event Buy(address indexed buyer, uint256 ethSpent, uint256 netTokens, uint256 feeTokens);
+    event Buy(
+        address indexed buyer,
+        uint256 ethSpent,
+        uint256 netTokens,
+        uint256 feeTokens
+    );
 
     function balanceOf(
         address _owner
@@ -153,7 +166,7 @@ contract VotingToken_Upgradeable_V2 is
         return (totalSupply * 10) / 10000; // 0.1 % = 10 / 10000
     }
 
-    // ! требования к цене - минимум, максимум, кратность (для ограничения размера маппинга)?
+    // [3]
     function vote(uint256 price) public notFrozen(msg.sender) {
         if (!votingActive()) revert VotingNotActive();
         if (balances[msg.sender] < minTokensForVoting())
@@ -165,8 +178,7 @@ contract VotingToken_Upgradeable_V2 is
         hasVoted[votingNumber][msg.sender] = true;
     }
 
-    /** startVoting должен изменить votingStartedTime, 
-    votingNumber, и вызвать событие VotingStarted. */
+
     function startVoting() public {
         if (balances[msg.sender] < minTokenForStartVoting())
             revert InefficientTokens();
@@ -176,25 +188,7 @@ contract VotingToken_Upgradeable_V2 is
         emit VotingStarted(votingNumber, votingStartedTime);
     }
 
-    /*
-       Завершение голосования.
-      
-       Как обычно решают
-
-            Ограничивают количество элементов.
-            Например, не более 10 предложенных цен.
-
-            Переносят вычисления off-chain.
-            Например, результат голосования вычисляется сервером или DAO-скриптом,
-            а контракт просто получает winningPrice через транзакцию.
-
-            Разбивают процесс на несколько шагов.
-            Вместо одного большого цикла — несколько маленьких функций с частичным подсчётом.
-
-            Используют структуры данных с константным временем (O(1)).
-            Например, mapping вместо array,
-            чтобы не нужно было перебирать элементы.
-    */
+    // [3]
     function endVoting() external {
         if (votingActive()) revert VotingIsActive();
 
@@ -231,8 +225,11 @@ contract VotingToken_Upgradeable_V2 is
     }
 
     function buy() public payable notFrozen(msg.sender) {
-        require(msg.value > 0, "No ETH sent"); //!!!!!!!!!!!!!!!!!
-        uint256 tokens = (msg.value * 1e18) / tokenPrice; // Токены ERC-20 тоже имеют 18 знаков "после запятой"
+        require(msg.value > 0, NoETHsent());
+
+        // Токены ERC-20 тоже имеют 18 знаков "после запятой"
+        // https://docs.openzeppelin.com/contracts/4.x/api/token/erc20?utm_source=chatgpt.com#ERC20-decimals--
+        uint256 tokens = (msg.value * 1e18) / tokenPrice;
 
         // подстановки:
         // * tokens =
@@ -271,13 +268,17 @@ contract VotingToken_Upgradeable_V2 is
 
         // Event покупки (чисто для внешних систем)
         emit Buy(msg.sender, msg.value, netTokens, fee);
+    }
 
-        emit Transfer(address(0), msg.sender, netTokens);
+    modifier nonReentrant() {
+        if (_status == _ENTERED) revert ReentrantCall();
+        _status = _ENTERED;
+        _;
+        _status = _NOT_ENTERED;
     }
 
     // ограничение на продажу, на сколько важно? [1]
-    function sell(uint256 amount) public notFrozen(msg.sender) {
-        // TODO - модификатор nonReentrant (не даёт функции выполняться повторно, пока она не завершилась)
+    function sell(uint256 amount) public nonReentrant notFrozen(msg.sender) {
         if (amount == 0) revert ZeroTokenAmount();
         if (balances[msg.sender] < amount) revert InsufficientBalanceToSell();
 
@@ -305,8 +306,8 @@ contract VotingToken_Upgradeable_V2 is
         sellFee = _newFee;
     }
 
-    // должна быть без ограничения на админа
-    // TODO если accumulatedFees > totalSupply (?)
+    // должна быть без ограничения на админа (?)
+    // [4]
     function burnAccumulatedFees() external {
         if (block.timestamp < lastBurnTime + 7 days) revert TooEarlyToBurn();
         totalSupply -= accumulatedFees;
@@ -324,8 +325,11 @@ contract VotingToken_Upgradeable_V2 is
 
     // UUPS: upgrade logic
     function upgradeTo(address newImplementation) external onlyAdmin {
-        require(newImplementation.code.length > 0, "Not a contract");
-        require(newImplementation != _getImplementation(), "Same impl");
+        require(newImplementation.code.length > 0, NotAContract());
+        require(
+            newImplementation != _getImplementation(),
+            SameImplementation()
+        );
         _setImplementation(newImplementation);
     }
 }
@@ -344,6 +348,7 @@ contract VotingToken_Upgradeable_V2 is
 выгодно ли очищать маппинги или лучше использовать раунды?
 [1] На период активного голосования запрещается выполнять sell для пользователей, которые уже проголосовали.
     Это сохраняет честный вес голоса. Это делает голосование консистентным и не позволяет манипулировать ценой.
+
     
  */
 
@@ -354,14 +359,32 @@ contract VotingToken_Upgradeable_V2 is
 //// Функцию endVoting может вызвать любой пользователь, но правила
 //// должны проверять, что она вызывается только после истечения времени timeToVote.
 Контракты должны быть задеплоены в тестовую сеть Sepolia и проверены на Etherscan (sepolia.etherscan.io).
+[3]     // ! требования к цене - минимум, максимум, кратность (для ограничения размера маппинга)?
+    /*
+       Завершение голосования.
+      
+       Как обычно решают
 
+            Ограничивают количество элементов.
+            Например, не более 10 предложенных цен.
 
+            Переносят вычисления off-chain.
+            Например, результат голосования вычисляется сервером или DAO-скриптом,
+            а контракт просто получает winningPrice через транзакцию.
 
-ограничение на сумму ставки
-ограничить функции правом администратора
-Проверка перед сжиганием комиссий if (balances[address(this)] < accumulatedFees) revert InefficientBalance();
-границы комиссии - Добавить проверку if (_newFee > fee_denominator) revert FeeTooHigh(); в setBuyFee() и setSellFee() чтобы комиссия не превышала 100%.
-*/
+            Разбивают процесс на несколько шагов.
+            Вместо одного большого цикла — несколько маленьких функций с частичным подсчётом.
+
+            Используют структуры данных с константным временем (O(1)).
+            Например, mapping вместо array,
+            чтобы не нужно было перебирать элементы.
+    */
+
+// ограничение на сумму ставки
+// ограничить функции правом администратора
+// Проверка перед сжиганием комиссий if (balances[address(this)] < accumulatedFees) revert InefficientBalance();
+// границы комиссии - Добавить проверку if (_newFee > fee_denominator) revert FeeTooHigh(); в setBuyFee() и setSellFee() чтобы комиссия не превышала 100%.
+
 //TODO Topics that have been learnt:
 /**
 1.  Formatting (wei, gwei, eth, etc.) 
@@ -371,6 +394,7 @@ contract VotingToken_Upgradeable_V2 is
 5.  Gas 
 6.  // !Memoization pattern 
 
+[4] // TODO если accumulatedFees > totalSupply (?)
 
 
 1️ Результат голосования (yes/no или totalVotes)	Итоговое количество голосов для данного votingNumber	Вместо пересчёта каждого раза по mapping(address → voteAmount) можно хранить промежуточные суммы → меньше газа и быстрее итоговая функция endVoting()

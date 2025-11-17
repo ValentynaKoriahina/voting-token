@@ -1,7 +1,6 @@
 import { expect } from "chai";
 import { network } from "hardhat";
 const { ethers } = await network.connect();
-import { Contract } from "ethers"; // !
 import type { VotingTokenTest } from "../typechain-types/index.js";
 
 describe("Proxy + VotingToken", function () {

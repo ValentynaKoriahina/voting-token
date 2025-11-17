@@ -1,6 +1,5 @@
 import { expect } from "chai";
-import type { VotingTokenTest } from "../typechain-types/index.js"; // важно использовать import type 
-import type { VotingTokenTest_Upgradeable } from "../typechain-types/index.js";
+import type { VotingTokenTest_Upgradeable } from "../typechain-types/index.js";  // важно использовать import type 
 import { network } from "hardhat";
 const { ethers } = await network.connect();
 
@@ -14,7 +13,7 @@ const sellFee = 5;
 async function deployProxyWithLogic() {
   const [admin] = await ethers.getSigners();
 
-  // 1) Деплой логики БЕЗ аргументов конструктора
+  // 1) Деплой логики без аргументов конструктора
   const Logic = await ethers.getContractFactory("VotingTokenTest_Upgradeable");
   const logic = await Logic.deploy();        // ✅ без аргументов
   await logic.waitForDeployment();
