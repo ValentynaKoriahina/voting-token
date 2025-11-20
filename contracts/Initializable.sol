@@ -5,28 +5,16 @@ abstract contract Initializable {
     error AlreadyInitialized();
 
     bool private _initialized;
-    bool private _initializing;
 
     modifier initializer() {
-        if (_initialized && !_initializing) {
+        if (_initialized) {
             revert AlreadyInitialized();
         }
-
-        bool isTop = !_initializing;
-
-        if (isTop) {
-            _initializing = true;
-            _initialized = true;
-        }
-
+        _initialized = true;
         _;
-
-        if (isTop) {
-            _initializing = false;
-        }
     }
 
-    // Запрещает initialize() для имплементации
+    // Блокируем initialize() у логики
     function _disableInitializers() internal {
         _initialized = true;
     }

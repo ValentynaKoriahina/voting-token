@@ -2,14 +2,8 @@
 pragma solidity ^0.8.20;
 import "./VotingToken_UUPSproxyStorage.sol";
 
-contract VotingToken_UUPSproxy is VotingToken_UUPSproxyStorage{
-    event Upgraded(
-        address indexed previousImplementation,
-        address indexed newImplementation
-    );
-
-    event AdminChanged(address indexed previousAdmin, address indexed newAdmin);
-
+contract VotingToken_UUPSproxy is VotingToken_UUPSproxyStorage {
+    
     constructor(address implementation_, address admin_) {
         _setImplementation(implementation_);
         _setAdmin(admin_);

@@ -8,7 +8,7 @@ import type { TypedContractEvent, TypedDeferredTopicFilter, TypedEventLog, Typed
   export interface VotingTokenInterface extends Interface {
     getFunction(nameOrSignature: "accumulatedFees" | "admin" | "allowance" | "allowances" | "approve" | "balanceOf" | "balances" | "burnAccumulatedFees" | "buy" | "endVoting" | "hasVoted" | "lastBurnTime" | "proposedPrices" | "sell" | "setBuyFee" | "setSellFee" | "startVoting" | "timeToVote" | "tokenPrice" | "totalSupply" | "transfer" | "transferFrom" | "upgradeTo" | "vote" | "votes" | "votingActive" | "votingNumber" | "votingStartedTime"): FunctionFragment;
 
-    getEvent(nameOrSignatureOrTopic: "Approval" | "Transfer" | "VotingEnded" | "VotingStarted"): EventFragment;
+    getEvent(nameOrSignatureOrTopic: "AdminChanged" | "Approval" | "Transfer" | "Upgraded" | "VotingEnded" | "VotingStarted"): EventFragment;
 
     encodeFunctionData(functionFragment: 'accumulatedFees', values?: undefined): string;
 encodeFunctionData(functionFragment: 'admin', values?: undefined): string;
@@ -70,6 +70,18 @@ decodeFunctionResult(functionFragment: 'votingStartedTime', data: BytesLike): Re
   }
 
   
+    export namespace AdminChangedEvent {
+      export type InputTuple = [previousAdmin: AddressLike, newAdmin: AddressLike];
+      export type OutputTuple = [previousAdmin: string, newAdmin: string];
+      export interface OutputObject {previousAdmin: string, newAdmin: string };
+      export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>
+      export type Filter = TypedDeferredTopicFilter<Event>
+      export type Log = TypedEventLog<Event>
+      export type LogDescription = TypedLogDescription<Event>
+    }
+
+  
+
     export namespace ApprovalEvent {
       export type InputTuple = [_owner: AddressLike, _spender: AddressLike, _value: BigNumberish];
       export type OutputTuple = [_owner: string, _spender: string, _value: bigint];
@@ -86,6 +98,18 @@ decodeFunctionResult(functionFragment: 'votingStartedTime', data: BytesLike): Re
       export type InputTuple = [_from: AddressLike, _to: AddressLike, _value: BigNumberish];
       export type OutputTuple = [_from: string, _to: string, _value: bigint];
       export interface OutputObject {_from: string, _to: string, _value: bigint };
+      export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>
+      export type Filter = TypedDeferredTopicFilter<Event>
+      export type Log = TypedEventLog<Event>
+      export type LogDescription = TypedLogDescription<Event>
+    }
+
+  
+
+    export namespace UpgradedEvent {
+      export type InputTuple = [previousImplementation: AddressLike, newImplementation: AddressLike];
+      export type OutputTuple = [previousImplementation: string, newImplementation: string];
+      export interface OutputObject {previousImplementation: string, newImplementation: string };
       export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>
       export type Filter = TypedDeferredTopicFilter<Event>
       export type Log = TypedEventLog<Event>
@@ -519,19 +543,29 @@ getFunction(nameOrSignature: 'votingStartedTime'): TypedContractMethod<
       'view'
     >;
 
-    getEvent(key: 'Approval'): TypedContractEvent<ApprovalEvent.InputTuple, ApprovalEvent.OutputTuple, ApprovalEvent.OutputObject>;
+    getEvent(key: 'AdminChanged'): TypedContractEvent<AdminChangedEvent.InputTuple, AdminChangedEvent.OutputTuple, AdminChangedEvent.OutputObject>;
+getEvent(key: 'Approval'): TypedContractEvent<ApprovalEvent.InputTuple, ApprovalEvent.OutputTuple, ApprovalEvent.OutputObject>;
 getEvent(key: 'Transfer'): TypedContractEvent<TransferEvent.InputTuple, TransferEvent.OutputTuple, TransferEvent.OutputObject>;
+getEvent(key: 'Upgraded'): TypedContractEvent<UpgradedEvent.InputTuple, UpgradedEvent.OutputTuple, UpgradedEvent.OutputObject>;
 getEvent(key: 'VotingEnded'): TypedContractEvent<VotingEndedEvent.InputTuple, VotingEndedEvent.OutputTuple, VotingEndedEvent.OutputObject>;
 getEvent(key: 'VotingStarted'): TypedContractEvent<VotingStartedEvent.InputTuple, VotingStartedEvent.OutputTuple, VotingStartedEvent.OutputObject>;
 
     filters: {
       
+      'AdminChanged(address,address)': TypedContractEvent<AdminChangedEvent.InputTuple, AdminChangedEvent.OutputTuple, AdminChangedEvent.OutputObject>;
+      AdminChanged: TypedContractEvent<AdminChangedEvent.InputTuple, AdminChangedEvent.OutputTuple, AdminChangedEvent.OutputObject>;
+    
+
       'Approval(address,address,uint256)': TypedContractEvent<ApprovalEvent.InputTuple, ApprovalEvent.OutputTuple, ApprovalEvent.OutputObject>;
       Approval: TypedContractEvent<ApprovalEvent.InputTuple, ApprovalEvent.OutputTuple, ApprovalEvent.OutputObject>;
     
 
       'Transfer(address,address,uint256)': TypedContractEvent<TransferEvent.InputTuple, TransferEvent.OutputTuple, TransferEvent.OutputObject>;
       Transfer: TypedContractEvent<TransferEvent.InputTuple, TransferEvent.OutputTuple, TransferEvent.OutputObject>;
+    
+
+      'Upgraded(address,address)': TypedContractEvent<UpgradedEvent.InputTuple, UpgradedEvent.OutputTuple, UpgradedEvent.OutputObject>;
+      Upgraded: TypedContractEvent<UpgradedEvent.InputTuple, UpgradedEvent.OutputTuple, UpgradedEvent.OutputObject>;
     
 
       'VotingEnded(uint256,uint256)': TypedContractEvent<VotingEndedEvent.InputTuple, VotingEndedEvent.OutputTuple, VotingEndedEvent.OutputObject>;

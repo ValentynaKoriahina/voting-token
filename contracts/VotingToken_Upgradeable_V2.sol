@@ -54,6 +54,8 @@ contract VotingToken_Upgradeable_V2 is
     // hasVoted[номер_раунда][адрес] = true, если пользователь уже голосовал
     mapping(uint256 => mapping(address => bool)) public hasVoted;
     uint256[] public proposedPrices;
+    uint256 public currentWinningPrice;
+    uint256 public currentWinningWeight;
 
     // Балансы и разрешения по стандарту ERC-20
     mapping(address => uint256) public balances;
@@ -83,6 +85,11 @@ contract VotingToken_Upgradeable_V2 is
 
     event VotingStarted(uint256 indexed votingNumber, uint256 startTime);
     event VotingEnded(uint256 indexed votingNumber, uint256 endTime);
+    event Vote(
+        address indexed voter,
+        uint256 indexed proposedPrice,
+        uint256 weight
+    );
     event Buy(
         address indexed buyer,
         uint256 ethSpent,
@@ -92,7 +99,7 @@ contract VotingToken_Upgradeable_V2 is
 
     function balanceOf(
         address _owner
-    ) external view override returns (uint256 balance) {
+    ) public view override returns (uint256 balance) {
         return (balances[_owner]);
     }
 
@@ -171,13 +178,23 @@ contract VotingToken_Upgradeable_V2 is
         if (!votingActive()) revert VotingNotActive();
         if (balances[msg.sender] < minTokensForVoting())
             revert InsufficientTokens();
+
         if (votes[votingNumber][price] == 0) {
             proposedPrices.push(price);
         }
-        votes[votingNumber][price] += balances[msg.sender];
-        hasVoted[votingNumber][msg.sender] = true;
-    }
 
+        votes[votingNumber][price] += balances[msg.sender];
+
+        uint256 newWeight = votes[votingNumber][price];
+
+        if (newWeight > currentWinningWeight) {
+            currentWinningWeight = newWeight;
+            currentWinningPrice = price;
+        }
+
+        hasVoted[votingNumber][msg.sender] = true;
+        emit Vote(msg.sender, price, balances[msg.sender]);
+    }
 
     function startVoting() public {
         if (balances[msg.sender] < minTokenForStartVoting())
@@ -192,23 +209,15 @@ contract VotingToken_Upgradeable_V2 is
     function endVoting() external {
         if (votingActive()) revert VotingIsActive();
 
-        uint256 winningPrice = 0;
-        uint256 maxVotes = 0;
-
-        for (uint256 i = 0; i < proposedPrices.length; i++) {
-            uint256 price = proposedPrices[i];
-            uint256 voteCount = votes[votingNumber][price];
-
-            if (voteCount > maxVotes) {
-                maxVotes = voteCount;
-                winningPrice = price;
-            }
-        }
-
-        tokenPrice = winningPrice;
+        tokenPrice = currentWinningPrice;
 
         delete proposedPrices;
         votingStartedTime = 0;
+
+        // очистка временных leader-полей
+        currentWinningPrice = 0;
+        currentWinningWeight = 0;
+
         emit VotingEnded(votingNumber, block.timestamp);
     }
 
@@ -227,7 +236,7 @@ contract VotingToken_Upgradeable_V2 is
     function buy() public payable notFrozen(msg.sender) {
         require(msg.value > 0, NoETHsent());
 
-        // Токены ERC-20 тоже имеют 18 знаков "после запятой"
+        // Токены ERC-20 обычно на практике имеют 18 знаков "после запятой" (т.к. 1 ETH = 1e18 wei).
         // https://docs.openzeppelin.com/contracts/4.x/api/token/erc20?utm_source=chatgpt.com#ERC20-decimals--
         uint256 tokens = (msg.value * 1e18) / tokenPrice;
 
@@ -239,8 +248,6 @@ contract VotingToken_Upgradeable_V2 is
 
         // * или проверка через простую математику
         // 0.05 ETH / 0.002 ETH = 25 токенов
-
-        // TODO Проверка если результат округления дал 0 токенов — отклоняем транзакцию
 
         uint256 fee = (tokens * buyFee) / fee_denominator;
         // * fee
@@ -291,7 +298,7 @@ contract VotingToken_Upgradeable_V2 is
         balances[address(this)] += fee;
         accumulatedFees += fee;
         totalSupply -= netTokens;
-
+        // call используется для корректной обработки ETH-платежа и контроля его успешности (через ok), в отличие от устаревших transfer/send
         (bool ok, ) = payable(msg.sender).call{value: ethAmount}("");
         if (!ok) revert ETHTransferFailed();
 

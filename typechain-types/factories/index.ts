@@ -5,6 +5,7 @@ export * as ierc20Sol from './IERC20.sol/index.js';
 export * as initializableSol from './Initializable.sol/index.js';
 export * as votingTokenSol from './VotingToken.sol/index.js';
 export * as votingTokenUupSproxySol from './VotingToken_UUPSproxy.sol/index.js';
+export * as votingTokenUupSproxyStorageSol from './VotingToken_UUPSproxyStorage.sol/index.js';
 export * as votingTokenUpgradeableSol from './VotingToken_Upgradeable.sol/index.js';
 export * as votingTokenUpgradeableV2Sol from './VotingToken_Upgradeable_V2.sol/index.js';
 export * as votingTokenProxySol from './VotingToken_proxy.sol/index.js';

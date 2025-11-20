@@ -9,6 +9,8 @@ import type * as votingTokenSol from './VotingToken.sol/index.js';
 export type { votingTokenSol };
 import type * as votingTokenUupSproxySol from './VotingToken_UUPSproxy.sol/index.js';
 export type { votingTokenUupSproxySol };
+import type * as votingTokenUupSproxyStorageSol from './VotingToken_UUPSproxyStorage.sol/index.js';
+export type { votingTokenUupSproxyStorageSol };
 import type * as votingTokenUpgradeableSol from './VotingToken_Upgradeable.sol/index.js';
 export type { votingTokenUpgradeableSol };
 import type * as votingTokenUpgradeableV2Sol from './VotingToken_Upgradeable_V2.sol/index.js';
@@ -36,3 +38,5 @@ export type { VotingToken_Upgradeable_V2 } from './VotingToken_Upgradeable_V2.so
 export { VotingToken_Upgradeable_V2__factory } from './factories/VotingToken_Upgradeable_V2.sol/VotingToken_Upgradeable_V2__factory.js';
 export type { VotingToken_UUPSproxy } from './VotingToken_UUPSproxy.sol/VotingToken_UUPSproxy.js';
 export { VotingToken_UUPSproxy__factory } from './factories/VotingToken_UUPSproxy.sol/VotingToken_UUPSproxy__factory.js';
+export type { VotingToken_UUPSproxyStorage } from './VotingToken_UUPSproxyStorage.sol/VotingToken_UUPSproxyStorage.js';
+export { VotingToken_UUPSproxyStorage__factory } from './factories/VotingToken_UUPSproxyStorage.sol/VotingToken_UUPSproxyStorage__factory.js';

@@ -19,6 +19,7 @@ getContractFactory(name: 'Proxy', signerOrOptions?: ethers.Signer | FactoryOptio
 getContractFactory(name: 'VotingToken_Upgradeable', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.VotingToken_Upgradeable__factory>
 getContractFactory(name: 'VotingToken_Upgradeable_V2', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.VotingToken_Upgradeable_V2__factory>
 getContractFactory(name: 'VotingToken_UUPSproxy', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.VotingToken_UUPSproxy__factory>
+getContractFactory(name: 'VotingToken_UUPSproxyStorage', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.VotingToken_UUPSproxyStorage__factory>
 
   getContractAt(name: 'IERC20', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.IERC20>
 getContractAt(name: 'Initializable', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.Initializable>
@@ -29,6 +30,7 @@ getContractAt(name: 'Proxy', address: string | ethers.Addressable, signer?: ethe
 getContractAt(name: 'VotingToken_Upgradeable', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.VotingToken_Upgradeable>
 getContractAt(name: 'VotingToken_Upgradeable_V2', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.VotingToken_Upgradeable_V2>
 getContractAt(name: 'VotingToken_UUPSproxy', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.VotingToken_UUPSproxy>
+getContractAt(name: 'VotingToken_UUPSproxyStorage', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.VotingToken_UUPSproxyStorage>
 
   deployContract(name: 'IERC20', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.IERC20>
 deployContract(name: 'Initializable', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.Initializable>
@@ -39,6 +41,7 @@ deployContract(name: 'Proxy', signerOrOptions?: ethers.Signer | DeployContractOp
 deployContract(name: 'VotingToken_Upgradeable', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.VotingToken_Upgradeable>
 deployContract(name: 'VotingToken_Upgradeable_V2', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.VotingToken_Upgradeable_V2>
 deployContract(name: 'VotingToken_UUPSproxy', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.VotingToken_UUPSproxy>
+deployContract(name: 'VotingToken_UUPSproxyStorage', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.VotingToken_UUPSproxyStorage>
 
   deployContract(name: 'IERC20', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.IERC20>
 deployContract(name: 'Initializable', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.Initializable>
@@ -49,6 +52,7 @@ deployContract(name: 'Proxy', args: any[], signerOrOptions?: ethers.Signer | Dep
 deployContract(name: 'VotingToken_Upgradeable', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.VotingToken_Upgradeable>
 deployContract(name: 'VotingToken_Upgradeable_V2', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.VotingToken_Upgradeable_V2>
 deployContract(name: 'VotingToken_UUPSproxy', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.VotingToken_UUPSproxy>
+deployContract(name: 'VotingToken_UUPSproxyStorage', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.VotingToken_UUPSproxyStorage>
 
     // default types
     getContractFactory(

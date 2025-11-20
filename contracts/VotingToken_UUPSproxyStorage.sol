@@ -8,6 +8,14 @@ abstract contract VotingToken_UUPSproxyStorage {
     bytes32 internal constant _ADMIN_SLOT =
         0xb53127684a568b3173ae13b9f8a6016e8e0a9d99b4b417e0dca44b12c0d33d6a; // EIP-1967 admin слот
 
+    event Upgraded(
+        address indexed previousImplementation,
+        address indexed newImplementation
+    );
+
+    event AdminChanged(address indexed previousAdmin, address indexed newAdmin);
+
+
     function _getImplementation() internal view returns (address impl) {
         assembly {
             impl := sload(_IMPLEMENTATION_SLOT)
@@ -20,15 +28,23 @@ abstract contract VotingToken_UUPSproxyStorage {
         }
     }
 
-function _setImplementation(address newImpl) internal {
+    function _setImplementation(address newImpl) internal {
+        address oldImpl = _getImplementation();
+
         assembly {
             sstore(_IMPLEMENTATION_SLOT, newImpl)
         }
+
+        emit Upgraded(oldImpl, newImpl);
     }
-    
+
     function _setAdmin(address newAdmin) internal {
+        address oldAdmin = _getAdmin();
+
         assembly {
             sstore(_ADMIN_SLOT, newAdmin)
         }
+
+        emit AdminChanged(oldAdmin, newAdmin);
     }
 }
