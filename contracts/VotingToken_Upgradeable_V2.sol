@@ -10,15 +10,15 @@ contract VotingToken_Upgradeable_V2 is
     VotingToken_UUPSproxyStorage,
     Initializable
 {
-    error InefficientETHForBuying();
-    error InefficientETHInContract();
+    error InsufficientETHForBuying();
+    error InsufficientETHInContract();
     error ZeroTokenAmount();
-    error InefficientTokens();
+    error InsufficientTokens();
     error OnlyAdmin();
     error InsufficientBalanceToSell();
     error VotingIsActive();
     error VotingNotActive();
-    error InefficientBalance();
+    error InsufficientBalance();
     error TooEarlyToBurn();
     error InvalidSpender();
     error LockedUntilVotingEnds();
@@ -123,7 +123,7 @@ contract VotingToken_Upgradeable_V2 is
         uint256 _value,
         address _to
     ) internal notFrozen(_from) {
-        if (balances[_from] < _value) revert InefficientBalance();
+        if (balances[_from] < _value) revert InsufficientBalance();
         balances[_from] -= _value;
         balances[_to] += _value;
         emit Transfer(_from, _to, _value);
@@ -170,7 +170,7 @@ contract VotingToken_Upgradeable_V2 is
     function vote(uint256 price) public notFrozen(msg.sender) {
         if (!votingActive()) revert VotingNotActive();
         if (balances[msg.sender] < minTokensForVoting())
-            revert InefficientTokens();
+            revert InsufficientTokens();
         if (votes[votingNumber][price] == 0) {
             proposedPrices.push(price);
         }
@@ -181,7 +181,7 @@ contract VotingToken_Upgradeable_V2 is
 
     function startVoting() public {
         if (balances[msg.sender] < minTokenForStartVoting())
-            revert InefficientTokens();
+            revert InsufficientTokens();
         if (votingActive()) revert VotingIsActive();
         votingStartedTime = block.timestamp;
         votingNumber++; // новый раунд голосования
@@ -382,7 +382,7 @@ contract VotingToken_Upgradeable_V2 is
 
 // ограничение на сумму ставки
 // ограничить функции правом администратора
-// Проверка перед сжиганием комиссий if (balances[address(this)] < accumulatedFees) revert InefficientBalance();
+// Проверка перед сжиганием комиссий if (balances[address(this)] < accumulatedFees) revert InsufficientBalance();
 // границы комиссии - Добавить проверку if (_newFee > fee_denominator) revert FeeTooHigh(); в setBuyFee() и setSellFee() чтобы комиссия не превышала 100%.
 
 //TODO Topics that have been learnt:
