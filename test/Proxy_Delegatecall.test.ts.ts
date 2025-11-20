@@ -66,7 +66,7 @@ describe("VotingToken - startVoting()", function () {
     const txPromise = token.connect(addr1).startVoting();
     await expect(
       token.connect(addr1).startVoting()
-    ).to.not.be.revertedWithCustomError(token, "InefficientTokens");
+    ).to.not.be.revertedWithCustomError(token, "InsufficientTokens");
 
     receipt = await (await txPromise).wait();
 
@@ -116,11 +116,11 @@ describe("VotingToken - vote()", function () {
   it("Vote transaction succeeds only if user holds ≥ 0.05 % of total supply", async function () {
     await expect(
       token.connect(addr2).vote(ethers.parseEther("0.21"))
-    ).to.be.revertedWithCustomError(token, "InefficientTokens");
+    ).to.be.revertedWithCustomError(token, "InsufficientTokens");
 
     await expect(
       token.connect(addr1).vote(ethers.parseEther("0.12"))
-    ).to.not.be.revertedWithCustomError(token, "InefficientTokens");
+    ).to.not.be.revertedWithCustomError(token, "InsufficientTokens");
   });
 });
 

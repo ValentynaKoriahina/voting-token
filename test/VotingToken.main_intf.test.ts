@@ -33,7 +33,7 @@ describe("VotingToken - Main interface", function () {
   it("should revert transfer when balance is too low", async function () {
     await expect(
       token.connect(addr1).transfer(addr2.address, 99999n)
-    ).to.be.revertedWithCustomError(token, "InefficientBalance");
+    ).to.be.revertedWithCustomError(token, "InsufficientBalance");
   });
 
   it("should emit Transfer event for valid transfer", async function () {
