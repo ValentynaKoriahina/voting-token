@@ -61,6 +61,11 @@ contract VotingToken_Upgradeable_V2 is
     mapping(address => uint256) public balances;
     mapping(address => mapping(address => uint256)) public allowances;
 
+    // bool = 0 ↔ 1 → дорогие и нестабильные операции SSTORE
+    // uint256 (1 ↔ 2) = non-zero ↔ non-zero → дешевле и стабильнее по газу
+    // bool может делить слот с другими переменными (storage packing)
+    // uint256 всегда занимает отдельный storage-слот → предсказуемость
+    // uint256 не зависит от gas-refund правил сети
     uint256 private constant _NOT_ENTERED = 1;
     uint256 private constant _ENTERED = 2;
     uint256 private _status;
