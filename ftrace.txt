@@ -1,0 +1,6 @@
+└─ VotingToken_Upgradeable_V2::upgradeTo
+   ├─ VotingToken_UUPSproxyStorage::_getImplementation | [Int] 🔒   
+   ├─ VotingToken_UUPSproxyStorage::_setImplementation | [Int] 🔒  🛑 
+   │  └─ VotingToken_UUPSproxyStorage::_getImplementation | [Int] 🔒   
+   └─ VotingToken_UUPSproxyStorage::_getAdmin | [Int] 🔒   
+
