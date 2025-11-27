@@ -10,7 +10,8 @@ contract ERC20Test is ERC20 {
         uint8 decimals_
     ) ERC20(name_, symbol_, decimals_) {}
 
-    function giveBalanceForTest(address who, uint256 amount) external {
+    function setBalanceForTest(address who, uint256 amount) external {
         balances[who] = amount;
+        _totalSupply += amount;
     }
 }

@@ -2,21 +2,12 @@ import { expect } from "chai";
 import { network } from "hardhat";
 const { ethers } = await network.connect();
 
-
-
 const name = "Test";
 const symbol = "T";
 const decimals = 18;
 
 let token: any;
-const [admin, addr1, addr2] = await ethers.getSigners();
-
-const tokenPrice = ethers.parseEther("0.01");
-const buyFee = 10 // 0.1 * 100 = 10
-const sellFee = 5
-
-//  * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
+const [admin, addr1, addr2, addr3] = await ethers.getSigners();
 
 async function deployTestContract() {
   const Token = await ethers.getContractFactory("ERC20Test");
@@ -26,20 +17,23 @@ async function deployTestContract() {
   return instance;
 }
 
-describe("VotingToken - Main interface", function () {
+describe("ERC20.sol - main Interface", function () {
   before(async function () {
     token = await deployTestContract();
   });
 
   it("should give balance to addr1", async function () {
-    const tx = await token.giveBalanceForTest(addr1.address, 10n);
+    const totalSupply_b = await token.totalSupply();
+
+    const tx = await token.setBalanceForTest(addr1.address, 10n);
     await tx.wait();
     const balance = await token.balanceOf(addr1.address);
+    const totalSupply_a = await token.totalSupply();
     expect(balance).to.equal(10n);
+    expect(totalSupply_a).to.equal(totalSupply_b + 10n);
   });
 
-
-  it("should revert transfer when balance is too low", async function () {
+  it("should revert if allowance is insufficient", async function () {
     await expect(
       token.connect(addr1).transfer(addr2.address, 99999n)
     ).to.be.revertedWithCustomError(token, "InsufficientBalance");
@@ -57,5 +51,35 @@ describe("VotingToken - Main interface", function () {
     expect(balance1).to.equal(5n);
     expect(balance2).to.equal(5n);
   });
+
+  it("should set the allowance and emit Approval event", async function () {
+    await expect(token.connect(addr1).approve(addr2, 200n))
+      .to.emit(token, "Approval")
+      .withArgs(addr1, addr2, 200n)
+  });
+
+  it("should decrease allowance and emit Transfer event", async function () {
+
+    await token.connect(addr1).approve(addr2, 300n);
+
+    const allowance_b = await token.allowance(addr1, addr2);
+
+    await expect(token.connect(addr2).transferFrom(addr1, addr3, 2n))
+      .to.emit(token, "Transfer")
+      .withArgs(addr1, addr3, 2n);
+
+    const allowance_a = await token.allowance(addr1, addr2);
+
+    expect(allowance_a).to.equal(allowance_b - 2n);
+  });
+
+  it("should revert if allowance is insufficient", async function () {
+
+    await token.connect(addr1).approve(addr2, 600n);
+
+    await expect(token.connect(addr2).transferFrom(addr1, addr3, 601n))
+      .to.be.revertedWithCustomError(token, "AllowanceExceeded");
+  });
+
 });
 

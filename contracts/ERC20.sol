@@ -15,10 +15,10 @@ contract ERC20 is IERC20, VotingRules {
     error AllowanceExceeded();
     error InsufficientBalance();
 
-    uint256 internal _totalSupply;
 
     mapping(address => uint256) internal balances;
     mapping(address => mapping(address => uint256)) internal allowances;
+    uint256 internal _totalSupply;
 
     constructor(string memory name_, string memory symbol_, uint8 decimals_) {
         (_name, _symbol, _decimals) = (name_, symbol_, decimals_);
@@ -30,7 +30,7 @@ contract ERC20 is IERC20, VotingRules {
 
     function balanceOf(
         address _owner
-    ) public view override returns (uint256 balance) {
+    ) public view returns (uint256 balance) {
         return (balances[_owner]);
     }
 

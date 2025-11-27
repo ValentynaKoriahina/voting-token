@@ -11,6 +11,8 @@ npx hardhat test
 ### 🔹 Запуск конкретного файла
 ```bash
 npx hardhat test test/VotingToken.ts
+npx hardhat test .\test\ERC20.test.ts --coverage
+
 ```
 или с подпапкой:
 ```bash
