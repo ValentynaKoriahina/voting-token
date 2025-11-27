@@ -2,18 +2,27 @@ import { expect } from "chai";
 import { network } from "hardhat";
 const { ethers } = await network.connect();
 
+
+
+const name = "Test";
+const symbol = "T";
+const decimals = 18;
+
 let token: any;
 const [admin, addr1, addr2] = await ethers.getSigners();
+
 const tokenPrice = ethers.parseEther("0.01");
 const buyFee = 10 // 0.1 * 100 = 10
 const sellFee = 5
 
+//  * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 
 async function deployTestContract() {
-  const Token = await ethers.getContractFactory("VotingTokenTest");
-  const instance = await Token.deploy(tokenPrice, buyFee, sellFee);
+  const Token = await ethers.getContractFactory("ERC20Test");
+  const instance = await Token.deploy(name, symbol, decimals);
   await instance.waitForDeployment();
-  // console.log("Test contract deployed at:", await instance.getAddress());
+  console.log("Test contract deployed at:", await instance.getAddress());
   return instance;
 }
 
@@ -22,13 +31,13 @@ describe("VotingToken - Main interface", function () {
     token = await deployTestContract();
   });
 
-
   it("should give balance to addr1", async function () {
     const tx = await token.giveBalanceForTest(addr1.address, 10n);
     await tx.wait();
     const balance = await token.balanceOf(addr1.address);
     expect(balance).to.equal(10n);
   });
+
 
   it("should revert transfer when balance is too low", async function () {
     await expect(
