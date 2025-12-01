@@ -1,20 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "./VotingRules.sol";
-
+import "./CommonRules.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol"; // !!!
+import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
 // IERC20Metadata
-contract ERC20 is IERC20, VotingRules {
+contract ERC20 is IERC20, CommonRules {
     string internal _name;
     string internal _symbol;
     uint8 internal _decimals;
 
     error AllowanceExceeded();
     error InsufficientBalance();
-
 
     mapping(address => uint256) internal balances;
     mapping(address => mapping(address => uint256)) internal allowances;
