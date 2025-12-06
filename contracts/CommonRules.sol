@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
-import "./UUPSproxyStorage.sol";
-abstract contract CommonRules is UUPSproxyStorage{
+
+abstract contract CommonRules{
     error LockedUntilVotingEnds();
     error OnlyAdmin();
 
@@ -15,12 +15,7 @@ abstract contract CommonRules is UUPSproxyStorage{
             revert LockedUntilVotingEnds();
         _;
     }
-
-    modifier onlyAdmin() {
-        require(msg.sender == _getAdmin(), OnlyAdmin());
-        _;
-    }
-
+    
     function votingActive() public view returns (bool) {
         return
             votingStartedTime != 0 &&

@@ -1,34 +1,48 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "./CommonRules.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
-// IERC20Metadata
-contract ERC20 is IERC20, CommonRules {
+import "./CommonRules.sol";
+import "./customErrors/Errors.sol";
+
+abstract contract ERC20 is IERC20, CommonRules {
     string internal _name;
     string internal _symbol;
-    uint8 internal _decimals;
-
-    error AllowanceExceeded();
-    error InsufficientBalance();
+    uint256 internal _decimals;
 
     mapping(address => uint256) internal balances;
     mapping(address => mapping(address => uint256)) internal allowances;
     uint256 internal _totalSupply;
 
-    constructor(string memory name_, string memory symbol_, uint8 decimals_) {
-        (_name, _symbol, _decimals) = (name_, symbol_, decimals_);
+    // Инициализатор стал internal и был переименован.
+    // Модификатор 'initializer' удален. Он будет в главном контракте.
+    function _initializeERC20(
+        string memory name_,
+        string memory symbol_
+    ) internal {
+        _name = name_;
+        _symbol = symbol_;
     }
 
     function totalSupply() external view returns (uint256) {
         return _totalSupply;
     }
 
-    function balanceOf(
-        address _owner
-    ) public view returns (uint256 balance) {
+    function name() external view returns (string memory) {
+        return _name;
+    }
+
+    function symbol() external view returns (string memory) {
+        return _symbol;
+    }
+
+    function decimals() external view returns (uint256) {
+        return _decimals;
+    }
+
+    function balanceOf(address _owner) public view returns (uint256 balance) {
         return (balances[_owner]);
     }
 
@@ -41,7 +55,6 @@ contract ERC20 is IERC20, CommonRules {
         return (true);
     }
 
-    // Возвращает, сколько токенов spender ещё может потратить у owner
     function allowance(
         address _owner,
         address _spender
@@ -49,7 +62,6 @@ contract ERC20 is IERC20, CommonRules {
         return (allowances[_owner][_spender]);
     }
 
-    // Устанавливаем разрешение для другого адреса тратить токены владельца
     function approve(
         address _spender,
         uint256 _value
@@ -60,7 +72,6 @@ contract ERC20 is IERC20, CommonRules {
         return (true);
     }
 
-    //  transferFrom используется, когда кто-то переводит чужие токены с разрешения владельца.
     function transferFrom(
         address _from,
         address _to,
@@ -68,7 +79,7 @@ contract ERC20 is IERC20, CommonRules {
     ) external override returns (bool success) {
         if (allowances[_from][msg.sender] < _value) revert AllowanceExceeded();
         proceedTransfer(_from, _value, _to);
-        allowances[_from][msg.sender] -= _value; // Уменьшаем лимит после перевода — требование ERC-20
+        allowances[_from][msg.sender] -= _value;
 
         return (true);
     }

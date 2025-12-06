@@ -10,21 +10,37 @@ import * as Contracts from "./index.js";
 
 declare module "@nomicfoundation/hardhat-ethers/types" {
   interface HardhatEthersHelpers extends HardhatEthersHelpersBase {
-  getContractFactory(name: 'ERC20', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.ERC20__factory>
-getContractFactory(name: 'ERC20Test', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.ERC20Test__factory>
-getContractFactory(name: 'VotingRules', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.VotingRules__factory>
+  getContractFactory(name: 'AppProxyAdmin', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.AppProxyAdmin__factory>
+getContractFactory(name: 'AppTransparentUpgradeableProxy', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.AppTransparentUpgradeableProxy__factory>
+getContractFactory(name: 'CommonRules', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.CommonRules__factory>
+getContractFactory(name: 'ERC20', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.ERC20__factory>
+getContractFactory(name: 'Tradable', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.Tradable__factory>
+getContractFactory(name: 'Voting', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.Voting__factory>
+getContractFactory(name: 'VotingToken', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.VotingToken__factory>
 
-  getContractAt(name: 'ERC20', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.ERC20>
-getContractAt(name: 'ERC20Test', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.ERC20Test>
-getContractAt(name: 'VotingRules', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.VotingRules>
+  getContractAt(name: 'AppProxyAdmin', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.AppProxyAdmin>
+getContractAt(name: 'AppTransparentUpgradeableProxy', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.AppTransparentUpgradeableProxy>
+getContractAt(name: 'CommonRules', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.CommonRules>
+getContractAt(name: 'ERC20', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.ERC20>
+getContractAt(name: 'Tradable', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.Tradable>
+getContractAt(name: 'Voting', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.Voting>
+getContractAt(name: 'VotingToken', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.VotingToken>
 
-  deployContract(name: 'ERC20', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.ERC20>
-deployContract(name: 'ERC20Test', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.ERC20Test>
-deployContract(name: 'VotingRules', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.VotingRules>
+  deployContract(name: 'AppProxyAdmin', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.AppProxyAdmin>
+deployContract(name: 'AppTransparentUpgradeableProxy', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.AppTransparentUpgradeableProxy>
+deployContract(name: 'CommonRules', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.CommonRules>
+deployContract(name: 'ERC20', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.ERC20>
+deployContract(name: 'Tradable', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.Tradable>
+deployContract(name: 'Voting', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.Voting>
+deployContract(name: 'VotingToken', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.VotingToken>
 
-  deployContract(name: 'ERC20', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.ERC20>
-deployContract(name: 'ERC20Test', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.ERC20Test>
-deployContract(name: 'VotingRules', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.VotingRules>
+  deployContract(name: 'AppProxyAdmin', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.AppProxyAdmin>
+deployContract(name: 'AppTransparentUpgradeableProxy', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.AppTransparentUpgradeableProxy>
+deployContract(name: 'CommonRules', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.CommonRules>
+deployContract(name: 'ERC20', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.ERC20>
+deployContract(name: 'Tradable', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.Tradable>
+deployContract(name: 'Voting', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.Voting>
+deployContract(name: 'VotingToken', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.VotingToken>
 
     // default types
     getContractFactory(

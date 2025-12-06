@@ -81,3 +81,10 @@ npm run test:token
 npx hardhat test --parallel --bail --grep "buy"
 ```
 
+
+### 🔹 Покрытие
+
+```bash
+npx hardhat test .\test\ERC20.test.ts --coverage
+npx hardhat test --coverage
+```

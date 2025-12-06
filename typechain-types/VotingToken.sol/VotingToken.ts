@@ -6,74 +6,76 @@ import type { TypedContractEvent, TypedDeferredTopicFilter, TypedEventLog, Typed
   
 
   export interface VotingTokenInterface extends Interface {
-    getFunction(nameOrSignature: "accumulatedFees" | "admin" | "allowance" | "allowances" | "approve" | "balanceOf" | "balances" | "burnAccumulatedFees" | "buy" | "endVoting" | "hasVoted" | "lastBurnTime" | "proposedPrices" | "sell" | "setBuyFee" | "setSellFee" | "startVoting" | "timeToVote" | "tokenPrice" | "totalSupply" | "transfer" | "transferFrom" | "upgradeTo" | "vote" | "votes" | "votingActive" | "votingNumber" | "votingStartedTime"): FunctionFragment;
+    getFunction(nameOrSignature: "accumulatedFees" | "allowance" | "approve" | "balanceOf" | "burnAccumulatedFees" | "buy" | "buyFee" | "decimals" | "hasVoted" | "initialize" | "lastBurnTime" | "mint" | "name" | "owner" | "renounceOwnership" | "sell" | "sellFee" | "setBuyFee" | "setSellFee" | "symbol" | "timeToVote" | "tokenPrice" | "totalSupply" | "transfer" | "transferFrom" | "transferOwnership" | "votingActive" | "votingNumber" | "votingStartedTime"): FunctionFragment;
 
-    getEvent(nameOrSignatureOrTopic: "AdminChanged" | "Approval" | "Transfer" | "Upgraded" | "VotingEnded" | "VotingStarted"): EventFragment;
+    getEvent(nameOrSignatureOrTopic: "Approval" | "Buy" | "Initialized" | "OwnershipTransferred" | "Transfer"): EventFragment;
 
     encodeFunctionData(functionFragment: 'accumulatedFees', values?: undefined): string;
-encodeFunctionData(functionFragment: 'admin', values?: undefined): string;
 encodeFunctionData(functionFragment: 'allowance', values: [AddressLike, AddressLike]): string;
-encodeFunctionData(functionFragment: 'allowances', values: [AddressLike, AddressLike]): string;
 encodeFunctionData(functionFragment: 'approve', values: [AddressLike, BigNumberish]): string;
 encodeFunctionData(functionFragment: 'balanceOf', values: [AddressLike]): string;
-encodeFunctionData(functionFragment: 'balances', values: [AddressLike]): string;
 encodeFunctionData(functionFragment: 'burnAccumulatedFees', values?: undefined): string;
 encodeFunctionData(functionFragment: 'buy', values?: undefined): string;
-encodeFunctionData(functionFragment: 'endVoting', values?: undefined): string;
+encodeFunctionData(functionFragment: 'buyFee', values?: undefined): string;
+encodeFunctionData(functionFragment: 'decimals', values?: undefined): string;
 encodeFunctionData(functionFragment: 'hasVoted', values: [BigNumberish, AddressLike]): string;
+encodeFunctionData(functionFragment: 'initialize', values: [string, string, BigNumberish, BigNumberish, BigNumberish]): string;
 encodeFunctionData(functionFragment: 'lastBurnTime', values?: undefined): string;
-encodeFunctionData(functionFragment: 'proposedPrices', values: [BigNumberish]): string;
+encodeFunctionData(functionFragment: 'mint', values: [AddressLike, BigNumberish]): string;
+encodeFunctionData(functionFragment: 'name', values?: undefined): string;
+encodeFunctionData(functionFragment: 'owner', values?: undefined): string;
+encodeFunctionData(functionFragment: 'renounceOwnership', values?: undefined): string;
 encodeFunctionData(functionFragment: 'sell', values: [BigNumberish]): string;
+encodeFunctionData(functionFragment: 'sellFee', values?: undefined): string;
 encodeFunctionData(functionFragment: 'setBuyFee', values: [BigNumberish]): string;
 encodeFunctionData(functionFragment: 'setSellFee', values: [BigNumberish]): string;
-encodeFunctionData(functionFragment: 'startVoting', values?: undefined): string;
+encodeFunctionData(functionFragment: 'symbol', values?: undefined): string;
 encodeFunctionData(functionFragment: 'timeToVote', values?: undefined): string;
 encodeFunctionData(functionFragment: 'tokenPrice', values?: undefined): string;
 encodeFunctionData(functionFragment: 'totalSupply', values?: undefined): string;
 encodeFunctionData(functionFragment: 'transfer', values: [AddressLike, BigNumberish]): string;
 encodeFunctionData(functionFragment: 'transferFrom', values: [AddressLike, AddressLike, BigNumberish]): string;
-encodeFunctionData(functionFragment: 'upgradeTo', values: [AddressLike]): string;
-encodeFunctionData(functionFragment: 'vote', values: [BigNumberish]): string;
-encodeFunctionData(functionFragment: 'votes', values: [BigNumberish, BigNumberish]): string;
+encodeFunctionData(functionFragment: 'transferOwnership', values: [AddressLike]): string;
 encodeFunctionData(functionFragment: 'votingActive', values?: undefined): string;
 encodeFunctionData(functionFragment: 'votingNumber', values?: undefined): string;
 encodeFunctionData(functionFragment: 'votingStartedTime', values?: undefined): string;
 
     decodeFunctionResult(functionFragment: 'accumulatedFees', data: BytesLike): Result;
-decodeFunctionResult(functionFragment: 'admin', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'allowance', data: BytesLike): Result;
-decodeFunctionResult(functionFragment: 'allowances', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'approve', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'balanceOf', data: BytesLike): Result;
-decodeFunctionResult(functionFragment: 'balances', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'burnAccumulatedFees', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'buy', data: BytesLike): Result;
-decodeFunctionResult(functionFragment: 'endVoting', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'buyFee', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'decimals', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'hasVoted', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'initialize', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'lastBurnTime', data: BytesLike): Result;
-decodeFunctionResult(functionFragment: 'proposedPrices', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'mint', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'name', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'owner', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'renounceOwnership', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'sell', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'sellFee', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'setBuyFee', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'setSellFee', data: BytesLike): Result;
-decodeFunctionResult(functionFragment: 'startVoting', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'symbol', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'timeToVote', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'tokenPrice', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'totalSupply', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'transfer', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'transferFrom', data: BytesLike): Result;
-decodeFunctionResult(functionFragment: 'upgradeTo', data: BytesLike): Result;
-decodeFunctionResult(functionFragment: 'vote', data: BytesLike): Result;
-decodeFunctionResult(functionFragment: 'votes', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'transferOwnership', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'votingActive', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'votingNumber', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'votingStartedTime', data: BytesLike): Result;
   }
 
   
-    export namespace AdminChangedEvent {
-      export type InputTuple = [previousAdmin: AddressLike, newAdmin: AddressLike];
-      export type OutputTuple = [previousAdmin: string, newAdmin: string];
-      export interface OutputObject {previousAdmin: string, newAdmin: string };
+    export namespace ApprovalEvent {
+      export type InputTuple = [owner: AddressLike, spender: AddressLike, value: BigNumberish];
+      export type OutputTuple = [owner: string, spender: string, value: bigint];
+      export interface OutputObject {owner: string, spender: string, value: bigint };
       export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>
       export type Filter = TypedDeferredTopicFilter<Event>
       export type Log = TypedEventLog<Event>
@@ -82,10 +84,34 @@ decodeFunctionResult(functionFragment: 'votingStartedTime', data: BytesLike): Re
 
   
 
-    export namespace ApprovalEvent {
-      export type InputTuple = [_owner: AddressLike, _spender: AddressLike, _value: BigNumberish];
-      export type OutputTuple = [_owner: string, _spender: string, _value: bigint];
-      export interface OutputObject {_owner: string, _spender: string, _value: bigint };
+    export namespace BuyEvent {
+      export type InputTuple = [buyer: AddressLike, ethSpent: BigNumberish, netTokens: BigNumberish, feeTokens: BigNumberish];
+      export type OutputTuple = [buyer: string, ethSpent: bigint, netTokens: bigint, feeTokens: bigint];
+      export interface OutputObject {buyer: string, ethSpent: bigint, netTokens: bigint, feeTokens: bigint };
+      export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>
+      export type Filter = TypedDeferredTopicFilter<Event>
+      export type Log = TypedEventLog<Event>
+      export type LogDescription = TypedLogDescription<Event>
+    }
+
+  
+
+    export namespace InitializedEvent {
+      export type InputTuple = [version: BigNumberish];
+      export type OutputTuple = [version: bigint];
+      export interface OutputObject {version: bigint };
+      export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>
+      export type Filter = TypedDeferredTopicFilter<Event>
+      export type Log = TypedEventLog<Event>
+      export type LogDescription = TypedLogDescription<Event>
+    }
+
+  
+
+    export namespace OwnershipTransferredEvent {
+      export type InputTuple = [previousOwner: AddressLike, newOwner: AddressLike];
+      export type OutputTuple = [previousOwner: string, newOwner: string];
+      export interface OutputObject {previousOwner: string, newOwner: string };
       export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>
       export type Filter = TypedDeferredTopicFilter<Event>
       export type Log = TypedEventLog<Event>
@@ -95,45 +121,9 @@ decodeFunctionResult(functionFragment: 'votingStartedTime', data: BytesLike): Re
   
 
     export namespace TransferEvent {
-      export type InputTuple = [_from: AddressLike, _to: AddressLike, _value: BigNumberish];
-      export type OutputTuple = [_from: string, _to: string, _value: bigint];
-      export interface OutputObject {_from: string, _to: string, _value: bigint };
-      export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>
-      export type Filter = TypedDeferredTopicFilter<Event>
-      export type Log = TypedEventLog<Event>
-      export type LogDescription = TypedLogDescription<Event>
-    }
-
-  
-
-    export namespace UpgradedEvent {
-      export type InputTuple = [previousImplementation: AddressLike, newImplementation: AddressLike];
-      export type OutputTuple = [previousImplementation: string, newImplementation: string];
-      export interface OutputObject {previousImplementation: string, newImplementation: string };
-      export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>
-      export type Filter = TypedDeferredTopicFilter<Event>
-      export type Log = TypedEventLog<Event>
-      export type LogDescription = TypedLogDescription<Event>
-    }
-
-  
-
-    export namespace VotingEndedEvent {
-      export type InputTuple = [votingNumber: BigNumberish, endTime: BigNumberish];
-      export type OutputTuple = [votingNumber: bigint, endTime: bigint];
-      export interface OutputObject {votingNumber: bigint, endTime: bigint };
-      export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>
-      export type Filter = TypedDeferredTopicFilter<Event>
-      export type Log = TypedEventLog<Event>
-      export type LogDescription = TypedLogDescription<Event>
-    }
-
-  
-
-    export namespace VotingStartedEvent {
-      export type InputTuple = [votingNumber: BigNumberish, startTime: BigNumberish];
-      export type OutputTuple = [votingNumber: bigint, startTime: bigint];
-      export interface OutputObject {votingNumber: bigint, startTime: bigint };
+      export type InputTuple = [from: AddressLike, to: AddressLike, value: BigNumberish];
+      export type OutputTuple = [from: string, to: string, value: bigint];
+      export interface OutputObject {from: string, to: string, value: bigint };
       export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>
       export type Filter = TypedDeferredTopicFilter<Event>
       export type Log = TypedEventLog<Event>
@@ -184,24 +174,8 @@ decodeFunctionResult(functionFragment: 'votingStartedTime', data: BytesLike): Re
     
 
     
-    admin: TypedContractMethod<
-      [],
-      [string],
-      'view'
-    >
-    
-
-    
     allowance: TypedContractMethod<
       [_owner: AddressLike, _spender: AddressLike, ],
-      [bigint],
-      'view'
-    >
-    
-
-    
-    allowances: TypedContractMethod<
-      [arg0: AddressLike, arg1: AddressLike, ],
       [bigint],
       'view'
     >
@@ -224,14 +198,6 @@ decodeFunctionResult(functionFragment: 'votingStartedTime', data: BytesLike): Re
     
 
     
-    balances: TypedContractMethod<
-      [arg0: AddressLike, ],
-      [bigint],
-      'view'
-    >
-    
-
-    
     burnAccumulatedFees: TypedContractMethod<
       [],
       [void],
@@ -248,10 +214,18 @@ decodeFunctionResult(functionFragment: 'votingStartedTime', data: BytesLike): Re
     
 
     
-    endVoting: TypedContractMethod<
+    buyFee: TypedContractMethod<
       [],
-      [void],
-      'nonpayable'
+      [bigint],
+      'view'
+    >
+    
+
+    
+    decimals: TypedContractMethod<
+      [],
+      [bigint],
+      'view'
     >
     
 
@@ -264,6 +238,14 @@ decodeFunctionResult(functionFragment: 'votingStartedTime', data: BytesLike): Re
     
 
     
+    initialize: TypedContractMethod<
+      [name: string, symbol: string, tokenPrice: BigNumberish, buyFee: BigNumberish, sellFee: BigNumberish, ],
+      [void],
+      'nonpayable'
+    >
+    
+
+    
     lastBurnTime: TypedContractMethod<
       [],
       [bigint],
@@ -272,10 +254,34 @@ decodeFunctionResult(functionFragment: 'votingStartedTime', data: BytesLike): Re
     
 
     
-    proposedPrices: TypedContractMethod<
-      [arg0: BigNumberish, ],
-      [bigint],
+    mint: TypedContractMethod<
+      [to: AddressLike, amount: BigNumberish, ],
+      [void],
+      'nonpayable'
+    >
+    
+
+    
+    name: TypedContractMethod<
+      [],
+      [string],
       'view'
+    >
+    
+
+    
+    owner: TypedContractMethod<
+      [],
+      [string],
+      'view'
+    >
+    
+
+    
+    renounceOwnership: TypedContractMethod<
+      [],
+      [void],
+      'nonpayable'
     >
     
 
@@ -284,6 +290,14 @@ decodeFunctionResult(functionFragment: 'votingStartedTime', data: BytesLike): Re
       [amount: BigNumberish, ],
       [void],
       'nonpayable'
+    >
+    
+
+    
+    sellFee: TypedContractMethod<
+      [],
+      [bigint],
+      'view'
     >
     
 
@@ -304,10 +318,10 @@ decodeFunctionResult(functionFragment: 'votingStartedTime', data: BytesLike): Re
     
 
     
-    startVoting: TypedContractMethod<
+    symbol: TypedContractMethod<
       [],
-      [void],
-      'nonpayable'
+      [string],
+      'view'
     >
     
 
@@ -352,26 +366,10 @@ decodeFunctionResult(functionFragment: 'votingStartedTime', data: BytesLike): Re
     
 
     
-    upgradeTo: TypedContractMethod<
-      [newImplementation: AddressLike, ],
+    transferOwnership: TypedContractMethod<
+      [newOwner: AddressLike, ],
       [void],
       'nonpayable'
-    >
-    
-
-    
-    vote: TypedContractMethod<
-      [price: BigNumberish, ],
-      [void],
-      'nonpayable'
-    >
-    
-
-    
-    votes: TypedContractMethod<
-      [arg0: BigNumberish, arg1: BigNumberish, ],
-      [bigint],
-      'view'
     >
     
 
@@ -407,18 +405,8 @@ decodeFunctionResult(functionFragment: 'votingStartedTime', data: BytesLike): Re
       [bigint],
       'view'
     >;
-getFunction(nameOrSignature: 'admin'): TypedContractMethod<
-      [],
-      [string],
-      'view'
-    >;
 getFunction(nameOrSignature: 'allowance'): TypedContractMethod<
       [_owner: AddressLike, _spender: AddressLike, ],
-      [bigint],
-      'view'
-    >;
-getFunction(nameOrSignature: 'allowances'): TypedContractMethod<
-      [arg0: AddressLike, arg1: AddressLike, ],
       [bigint],
       'view'
     >;
@@ -432,11 +420,6 @@ getFunction(nameOrSignature: 'balanceOf'): TypedContractMethod<
       [bigint],
       'view'
     >;
-getFunction(nameOrSignature: 'balances'): TypedContractMethod<
-      [arg0: AddressLike, ],
-      [bigint],
-      'view'
-    >;
 getFunction(nameOrSignature: 'burnAccumulatedFees'): TypedContractMethod<
       [],
       [void],
@@ -447,30 +430,60 @@ getFunction(nameOrSignature: 'buy'): TypedContractMethod<
       [void],
       'payable'
     >;
-getFunction(nameOrSignature: 'endVoting'): TypedContractMethod<
+getFunction(nameOrSignature: 'buyFee'): TypedContractMethod<
       [],
-      [void],
-      'nonpayable'
+      [bigint],
+      'view'
+    >;
+getFunction(nameOrSignature: 'decimals'): TypedContractMethod<
+      [],
+      [bigint],
+      'view'
     >;
 getFunction(nameOrSignature: 'hasVoted'): TypedContractMethod<
       [arg0: BigNumberish, arg1: AddressLike, ],
       [boolean],
       'view'
     >;
+getFunction(nameOrSignature: 'initialize'): TypedContractMethod<
+      [name: string, symbol: string, tokenPrice: BigNumberish, buyFee: BigNumberish, sellFee: BigNumberish, ],
+      [void],
+      'nonpayable'
+    >;
 getFunction(nameOrSignature: 'lastBurnTime'): TypedContractMethod<
       [],
       [bigint],
       'view'
     >;
-getFunction(nameOrSignature: 'proposedPrices'): TypedContractMethod<
-      [arg0: BigNumberish, ],
-      [bigint],
+getFunction(nameOrSignature: 'mint'): TypedContractMethod<
+      [to: AddressLike, amount: BigNumberish, ],
+      [void],
+      'nonpayable'
+    >;
+getFunction(nameOrSignature: 'name'): TypedContractMethod<
+      [],
+      [string],
       'view'
+    >;
+getFunction(nameOrSignature: 'owner'): TypedContractMethod<
+      [],
+      [string],
+      'view'
+    >;
+getFunction(nameOrSignature: 'renounceOwnership'): TypedContractMethod<
+      [],
+      [void],
+      'nonpayable'
     >;
 getFunction(nameOrSignature: 'sell'): TypedContractMethod<
       [amount: BigNumberish, ],
       [void],
       'nonpayable'
+    >;
+getFunction(nameOrSignature: 'sellFee'): TypedContractMethod<
+      [],
+      [bigint],
+      'view'
     >;
 getFunction(nameOrSignature: 'setBuyFee'): TypedContractMethod<
       [_newFee: BigNumberish, ],
@@ -482,10 +495,10 @@ getFunction(nameOrSignature: 'setSellFee'): TypedContractMethod<
       [void],
       'nonpayable'
     >;
-getFunction(nameOrSignature: 'startVoting'): TypedContractMethod<
+getFunction(nameOrSignature: 'symbol'): TypedContractMethod<
       [],
-      [void],
-      'nonpayable'
+      [string],
+      'view'
     >;
 getFunction(nameOrSignature: 'timeToVote'): TypedContractMethod<
       [],
@@ -512,20 +525,10 @@ getFunction(nameOrSignature: 'transferFrom'): TypedContractMethod<
       [boolean],
       'nonpayable'
     >;
-getFunction(nameOrSignature: 'upgradeTo'): TypedContractMethod<
-      [newImplementation: AddressLike, ],
+getFunction(nameOrSignature: 'transferOwnership'): TypedContractMethod<
+      [newOwner: AddressLike, ],
       [void],
       'nonpayable'
-    >;
-getFunction(nameOrSignature: 'vote'): TypedContractMethod<
-      [price: BigNumberish, ],
-      [void],
-      'nonpayable'
-    >;
-getFunction(nameOrSignature: 'votes'): TypedContractMethod<
-      [arg0: BigNumberish, arg1: BigNumberish, ],
-      [bigint],
-      'view'
     >;
 getFunction(nameOrSignature: 'votingActive'): TypedContractMethod<
       [],
@@ -543,37 +546,32 @@ getFunction(nameOrSignature: 'votingStartedTime'): TypedContractMethod<
       'view'
     >;
 
-    getEvent(key: 'AdminChanged'): TypedContractEvent<AdminChangedEvent.InputTuple, AdminChangedEvent.OutputTuple, AdminChangedEvent.OutputObject>;
-getEvent(key: 'Approval'): TypedContractEvent<ApprovalEvent.InputTuple, ApprovalEvent.OutputTuple, ApprovalEvent.OutputObject>;
+    getEvent(key: 'Approval'): TypedContractEvent<ApprovalEvent.InputTuple, ApprovalEvent.OutputTuple, ApprovalEvent.OutputObject>;
+getEvent(key: 'Buy'): TypedContractEvent<BuyEvent.InputTuple, BuyEvent.OutputTuple, BuyEvent.OutputObject>;
+getEvent(key: 'Initialized'): TypedContractEvent<InitializedEvent.InputTuple, InitializedEvent.OutputTuple, InitializedEvent.OutputObject>;
+getEvent(key: 'OwnershipTransferred'): TypedContractEvent<OwnershipTransferredEvent.InputTuple, OwnershipTransferredEvent.OutputTuple, OwnershipTransferredEvent.OutputObject>;
 getEvent(key: 'Transfer'): TypedContractEvent<TransferEvent.InputTuple, TransferEvent.OutputTuple, TransferEvent.OutputObject>;
-getEvent(key: 'Upgraded'): TypedContractEvent<UpgradedEvent.InputTuple, UpgradedEvent.OutputTuple, UpgradedEvent.OutputObject>;
-getEvent(key: 'VotingEnded'): TypedContractEvent<VotingEndedEvent.InputTuple, VotingEndedEvent.OutputTuple, VotingEndedEvent.OutputObject>;
-getEvent(key: 'VotingStarted'): TypedContractEvent<VotingStartedEvent.InputTuple, VotingStartedEvent.OutputTuple, VotingStartedEvent.OutputObject>;
 
     filters: {
       
-      'AdminChanged(address,address)': TypedContractEvent<AdminChangedEvent.InputTuple, AdminChangedEvent.OutputTuple, AdminChangedEvent.OutputObject>;
-      AdminChanged: TypedContractEvent<AdminChangedEvent.InputTuple, AdminChangedEvent.OutputTuple, AdminChangedEvent.OutputObject>;
-    
-
       'Approval(address,address,uint256)': TypedContractEvent<ApprovalEvent.InputTuple, ApprovalEvent.OutputTuple, ApprovalEvent.OutputObject>;
       Approval: TypedContractEvent<ApprovalEvent.InputTuple, ApprovalEvent.OutputTuple, ApprovalEvent.OutputObject>;
     
 
+      'Buy(address,uint256,uint256,uint256)': TypedContractEvent<BuyEvent.InputTuple, BuyEvent.OutputTuple, BuyEvent.OutputObject>;
+      Buy: TypedContractEvent<BuyEvent.InputTuple, BuyEvent.OutputTuple, BuyEvent.OutputObject>;
+    
+
+      'Initialized(uint64)': TypedContractEvent<InitializedEvent.InputTuple, InitializedEvent.OutputTuple, InitializedEvent.OutputObject>;
+      Initialized: TypedContractEvent<InitializedEvent.InputTuple, InitializedEvent.OutputTuple, InitializedEvent.OutputObject>;
+    
+
+      'OwnershipTransferred(address,address)': TypedContractEvent<OwnershipTransferredEvent.InputTuple, OwnershipTransferredEvent.OutputTuple, OwnershipTransferredEvent.OutputObject>;
+      OwnershipTransferred: TypedContractEvent<OwnershipTransferredEvent.InputTuple, OwnershipTransferredEvent.OutputTuple, OwnershipTransferredEvent.OutputObject>;
+    
+
       'Transfer(address,address,uint256)': TypedContractEvent<TransferEvent.InputTuple, TransferEvent.OutputTuple, TransferEvent.OutputObject>;
       Transfer: TypedContractEvent<TransferEvent.InputTuple, TransferEvent.OutputTuple, TransferEvent.OutputObject>;
-    
-
-      'Upgraded(address,address)': TypedContractEvent<UpgradedEvent.InputTuple, UpgradedEvent.OutputTuple, UpgradedEvent.OutputObject>;
-      Upgraded: TypedContractEvent<UpgradedEvent.InputTuple, UpgradedEvent.OutputTuple, UpgradedEvent.OutputObject>;
-    
-
-      'VotingEnded(uint256,uint256)': TypedContractEvent<VotingEndedEvent.InputTuple, VotingEndedEvent.OutputTuple, VotingEndedEvent.OutputObject>;
-      VotingEnded: TypedContractEvent<VotingEndedEvent.InputTuple, VotingEndedEvent.OutputTuple, VotingEndedEvent.OutputObject>;
-    
-
-      'VotingStarted(uint256,uint256)': TypedContractEvent<VotingStartedEvent.InputTuple, VotingStartedEvent.OutputTuple, VotingStartedEvent.OutputObject>;
-      VotingStarted: TypedContractEvent<VotingStartedEvent.InputTuple, VotingStartedEvent.OutputTuple, VotingStartedEvent.OutputObject>;
     
     };
   }
