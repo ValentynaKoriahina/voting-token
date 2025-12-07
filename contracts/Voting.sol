@@ -2,23 +2,40 @@
 pragma solidity ^0.8.20;
 
 import "./customErrors/Errors.sol";
+import "./CommonRules.sol";
 
-abstract contract Voting {
+abstract contract Voting is CommonRules {
     function _getBalance(address owner) internal view virtual returns (uint256);
     function _getTotalSupply() internal view virtual returns (uint256);
+    function _applyNewPrice(uint256 price) internal virtual;
 
-    uint256 public constant timeToVote = 3 days;
+    uint256 public timeToVote;
     uint256 public votingNumber;
     uint256 public votingStartedTime;
 
     mapping(uint256 => mapping(uint256 => uint256)) public votes;
     mapping(uint256 => mapping(address => bool)) public hasVoted;
-    uint256[] public proposedPrices;
+
     uint256 public currentWinningPrice;
     uint256 public currentWinningWeight;
 
     // This is the result of voting. It should be used by the Tradable logic.
-    uint256 public tokenPrice;
+    uint256 public newTokenPrice;
+
+    function votingActive(
+        uint256 timeToVote_,
+        uint256 votingStartedTime_
+    ) public view returns (bool) {
+        return
+            votingStartedTime_ != 0 &&
+            block.timestamp < votingStartedTime_ + timeToVote_;
+    }
+
+    function _isFrozen(address user) internal view override returns (bool) {
+        return
+            votingActive(timeToVote, votingStartedTime) &&
+            hasVoted[votingNumber][user];
+    }
 
     event VotingStarted(uint256 indexed votingNumber, uint256 startTime);
     event VotingEnded(uint256 indexed votingNumber, uint256 endTime);
@@ -28,26 +45,15 @@ abstract contract Voting {
         uint256 weight
     );
 
-    modifier notFrozen(address from) {
-        if (votingActive() && hasVoted[votingNumber][from])
-            revert LockedUntilVotingEnds();
-        _;
-    }
-
-    function votingActive() public view returns (bool) {
-        return
-            votingStartedTime != 0 &&
-            block.timestamp < votingStartedTime + timeToVote;
+    function _initializeVote(uint256 timeToVote_) internal {
+        timeToVote = timeToVote_;
     }
 
     function vote(uint256 price) public notFrozen(msg.sender) {
-        if (!votingActive()) revert VotingNotActive();
+        if (!votingActive(timeToVote, votingStartedTime))
+            revert VotingNotActive();
         if (_getBalance(msg.sender) < minTokensForVoting())
             revert InsufficientTokens();
-
-        if (votes[votingNumber][price] == 0) {
-            proposedPrices.push(price);
-        }
 
         uint256 senderBalance = _getBalance(msg.sender);
         votes[votingNumber][price] += senderBalance;
@@ -66,31 +72,37 @@ abstract contract Voting {
     function startVoting() public {
         if (_getBalance(msg.sender) < minTokenForStartVoting())
             revert InsufficientTokens();
-        if (votingActive()) revert VotingIsActive();
+        if (votingActive(timeToVote, votingStartedTime))
+            revert VotingIsActive();
         votingStartedTime = block.timestamp;
         votingNumber++;
         emit VotingStarted(votingNumber, votingStartedTime);
     }
 
     function endVoting() external {
-        if (!votingActive() && votingStartedTime != 0) {
-            tokenPrice = currentWinningPrice;
-
-            delete proposedPrices;
-            votingStartedTime = 0;
-
-            currentWinningPrice = 0;
-            currentWinningWeight = 0;
-
-            emit VotingEnded(votingNumber, block.timestamp);
+        if (votingActive(timeToVote, votingStartedTime)) {
+            revert VotingIsActive();
         }
+        if (votingStartedTime == 0) {
+            revert VotingNotActive();
+        }
+
+        newTokenPrice = currentWinningPrice;
+
+        _applyNewPrice(currentWinningPrice);
+
+        votingStartedTime = 0;
+        currentWinningPrice = 0;
+        currentWinningWeight = 0;
+
+        emit VotingEnded(votingNumber, block.timestamp);
     }
 
-    function minTokensForVoting() internal view returns (uint256) {
+    function minTokensForVoting() public view returns (uint256) {
         return (_getTotalSupply() * 5) / 10000;
     }
 
-    function minTokenForStartVoting() internal view returns (uint256) {
+    function minTokenForStartVoting() public view returns (uint256) {
         return (_getTotalSupply() * 10) / 10000;
     }
 }

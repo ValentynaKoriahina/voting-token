@@ -24,26 +24,30 @@ abstract contract ERC20 is IERC20, CommonRules {
     ) internal {
         _name = name_;
         _symbol = symbol_;
+        // For upgradeable proxies default storage is zero, so set decimals explicitly
+        _decimals = 18;
     }
 
-    function totalSupply() external view returns (uint256) {
-        return _totalSupply;
-    }
-
-    function name() external view returns (string memory) {
+    function name() public view returns (string memory) {
         return _name;
     }
 
-    function symbol() external view returns (string memory) {
+    function symbol() public view returns (string memory) {
         return _symbol;
     }
 
-    function decimals() external view returns (uint256) {
-        return _decimals;
+    function decimals() public view returns (uint8) {
+        return uint8(_decimals);
     }
 
-    function balanceOf(address _owner) public view returns (uint256 balance) {
-        return (balances[_owner]);
+    function totalSupply() public view virtual override returns (uint256) {
+        return _totalSupply;
+    }
+
+    function balanceOf(
+        address account
+    ) public view virtual override returns (uint256) {
+        return balances[account];
     }
 
     function transfer(
@@ -88,7 +92,7 @@ abstract contract ERC20 is IERC20, CommonRules {
         address _from,
         uint256 _value,
         address _to
-    ) internal notFrozen(_from) {
+    ) internal notFrozen(msg.sender) {
         if (balances[_from] < _value) revert InsufficientBalance();
         balances[_from] -= _value;
         balances[_to] += _value;

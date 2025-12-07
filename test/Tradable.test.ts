@@ -10,9 +10,15 @@ let addr2: any;
 let addr3: any;
 
 describe("Tradable", function () {
-
   before(async function () {
-    const deployed = await deployVotingTokenProxy();
+    const buyFee: bigint = 200n;
+    const sellFee: bigint = 100n;
+    const tokenPriceValue = "0.002";
+    const deployed = await deployVotingTokenProxy(
+      tokenPriceValue,
+      buyFee,
+      sellFee
+    );
     [admin, addr1, addr2, addr3] = deployed.signers;
     token = deployed.token;
   });
@@ -23,11 +29,12 @@ describe("Tradable", function () {
     // 0.05 / 0.002 = 25 токенов
     const tokens = ethers.parseEther("25");
 
-    // fee = tokens * 500 / 10000 = 1.25
-    const feeTokens = ethers.parseEther("1.25");
+    // buyFee = 200 => 2%
+    const feeTokens = ethers.parseEther("0.5"); // 2% of 25
 
-    // net = 25 - 1.25 = 23.75
-    const netTokens = ethers.parseEther("23.75");
+    // fee = 25 * 0.02 = 0.5 токена
+    // net = 25 - 0.5 токена = 24.5
+    const netTokens = ethers.parseEther("24.5");
 
     await expect(token.connect(addr1).buy({ value: ethAmount }))
       .to.emit(token, "Transfer")
@@ -54,5 +61,3 @@ describe("Tradable", function () {
     console.log(`${fees} == ${feeTokens}`);
   });
 });
-
-

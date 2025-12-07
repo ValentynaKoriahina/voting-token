@@ -1,24 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-abstract contract CommonRules{
-    error LockedUntilVotingEnds();
-    error OnlyAdmin();
+import "./customErrors/Errors.sol";
 
-    mapping(uint256 => mapping(address => bool)) public hasVoted;
-    uint256 public votingNumber;
-    uint256 public votingStartedTime;
-    uint256 public constant timeToVote = 3 days;
+abstract contract CommonRules {
+    function _isFrozen(address user) internal view virtual returns (bool);
 
-    modifier notFrozen(address from) {
-        if (votingActive() && hasVoted[votingNumber][from])
+    modifier notFrozen(address user) {
+        if (_isFrozen(user)) {
             revert LockedUntilVotingEnds();
+        }
         _;
-    }
-    
-    function votingActive() public view returns (bool) {
-        return
-            votingStartedTime != 0 &&
-            block.timestamp < votingStartedTime + timeToVote;
     }
 }

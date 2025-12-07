@@ -6,9 +6,9 @@ import type { TypedContractEvent, TypedDeferredTopicFilter, TypedEventLog, Typed
   
 
   export interface VotingTokenInterface extends Interface {
-    getFunction(nameOrSignature: "accumulatedFees" | "allowance" | "approve" | "balanceOf" | "burnAccumulatedFees" | "buy" | "buyFee" | "decimals" | "hasVoted" | "initialize" | "lastBurnTime" | "mint" | "name" | "owner" | "renounceOwnership" | "sell" | "sellFee" | "setBuyFee" | "setSellFee" | "symbol" | "timeToVote" | "tokenPrice" | "totalSupply" | "transfer" | "transferFrom" | "transferOwnership" | "votingActive" | "votingNumber" | "votingStartedTime"): FunctionFragment;
+    getFunction(nameOrSignature: "accumulatedFees" | "allowance" | "approve" | "balanceOf" | "burnAccumulatedFees" | "buy" | "buyFee" | "currentWinningPrice" | "currentWinningWeight" | "decimals" | "endVoting" | "hasVoted" | "initialize" | "lastBurnTime" | "minTokenForStartVoting" | "minTokensForVoting" | "mint" | "name" | "newTokenPrice" | "owner" | "renounceOwnership" | "sell" | "sellFee" | "setBuyFee" | "setSellFee" | "startVoting" | "symbol" | "timeToVote" | "totalSupply" | "transfer" | "transferFrom" | "transferOwnership" | "vote" | "votes" | "votingActive" | "votingNumber" | "votingStartedTime"): FunctionFragment;
 
-    getEvent(nameOrSignatureOrTopic: "Approval" | "Buy" | "Initialized" | "OwnershipTransferred" | "Transfer"): EventFragment;
+    getEvent(nameOrSignatureOrTopic: "Approval" | "Buy" | "Initialized" | "OwnershipTransferred" | "Transfer" | "Vote" | "VotingEnded" | "VotingStarted"): EventFragment;
 
     encodeFunctionData(functionFragment: 'accumulatedFees', values?: undefined): string;
 encodeFunctionData(functionFragment: 'allowance', values: [AddressLike, AddressLike]): string;
@@ -17,26 +17,34 @@ encodeFunctionData(functionFragment: 'balanceOf', values: [AddressLike]): string
 encodeFunctionData(functionFragment: 'burnAccumulatedFees', values?: undefined): string;
 encodeFunctionData(functionFragment: 'buy', values?: undefined): string;
 encodeFunctionData(functionFragment: 'buyFee', values?: undefined): string;
+encodeFunctionData(functionFragment: 'currentWinningPrice', values?: undefined): string;
+encodeFunctionData(functionFragment: 'currentWinningWeight', values?: undefined): string;
 encodeFunctionData(functionFragment: 'decimals', values?: undefined): string;
+encodeFunctionData(functionFragment: 'endVoting', values?: undefined): string;
 encodeFunctionData(functionFragment: 'hasVoted', values: [BigNumberish, AddressLike]): string;
 encodeFunctionData(functionFragment: 'initialize', values: [string, string, BigNumberish, BigNumberish, BigNumberish]): string;
 encodeFunctionData(functionFragment: 'lastBurnTime', values?: undefined): string;
+encodeFunctionData(functionFragment: 'minTokenForStartVoting', values?: undefined): string;
+encodeFunctionData(functionFragment: 'minTokensForVoting', values?: undefined): string;
 encodeFunctionData(functionFragment: 'mint', values: [AddressLike, BigNumberish]): string;
 encodeFunctionData(functionFragment: 'name', values?: undefined): string;
+encodeFunctionData(functionFragment: 'newTokenPrice', values?: undefined): string;
 encodeFunctionData(functionFragment: 'owner', values?: undefined): string;
 encodeFunctionData(functionFragment: 'renounceOwnership', values?: undefined): string;
 encodeFunctionData(functionFragment: 'sell', values: [BigNumberish]): string;
 encodeFunctionData(functionFragment: 'sellFee', values?: undefined): string;
 encodeFunctionData(functionFragment: 'setBuyFee', values: [BigNumberish]): string;
 encodeFunctionData(functionFragment: 'setSellFee', values: [BigNumberish]): string;
+encodeFunctionData(functionFragment: 'startVoting', values?: undefined): string;
 encodeFunctionData(functionFragment: 'symbol', values?: undefined): string;
 encodeFunctionData(functionFragment: 'timeToVote', values?: undefined): string;
-encodeFunctionData(functionFragment: 'tokenPrice', values?: undefined): string;
 encodeFunctionData(functionFragment: 'totalSupply', values?: undefined): string;
 encodeFunctionData(functionFragment: 'transfer', values: [AddressLike, BigNumberish]): string;
 encodeFunctionData(functionFragment: 'transferFrom', values: [AddressLike, AddressLike, BigNumberish]): string;
 encodeFunctionData(functionFragment: 'transferOwnership', values: [AddressLike]): string;
-encodeFunctionData(functionFragment: 'votingActive', values?: undefined): string;
+encodeFunctionData(functionFragment: 'vote', values: [BigNumberish]): string;
+encodeFunctionData(functionFragment: 'votes', values: [BigNumberish, BigNumberish]): string;
+encodeFunctionData(functionFragment: 'votingActive', values: [BigNumberish, BigNumberish]): string;
 encodeFunctionData(functionFragment: 'votingNumber', values?: undefined): string;
 encodeFunctionData(functionFragment: 'votingStartedTime', values?: undefined): string;
 
@@ -47,25 +55,33 @@ decodeFunctionResult(functionFragment: 'balanceOf', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'burnAccumulatedFees', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'buy', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'buyFee', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'currentWinningPrice', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'currentWinningWeight', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'decimals', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'endVoting', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'hasVoted', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'initialize', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'lastBurnTime', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'minTokenForStartVoting', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'minTokensForVoting', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'mint', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'name', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'newTokenPrice', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'owner', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'renounceOwnership', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'sell', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'sellFee', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'setBuyFee', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'setSellFee', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'startVoting', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'symbol', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'timeToVote', data: BytesLike): Result;
-decodeFunctionResult(functionFragment: 'tokenPrice', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'totalSupply', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'transfer', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'transferFrom', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'transferOwnership', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'vote', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'votes', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'votingActive', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'votingNumber', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'votingStartedTime', data: BytesLike): Result;
@@ -124,6 +140,42 @@ decodeFunctionResult(functionFragment: 'votingStartedTime', data: BytesLike): Re
       export type InputTuple = [from: AddressLike, to: AddressLike, value: BigNumberish];
       export type OutputTuple = [from: string, to: string, value: bigint];
       export interface OutputObject {from: string, to: string, value: bigint };
+      export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>
+      export type Filter = TypedDeferredTopicFilter<Event>
+      export type Log = TypedEventLog<Event>
+      export type LogDescription = TypedLogDescription<Event>
+    }
+
+  
+
+    export namespace VoteEvent {
+      export type InputTuple = [voter: AddressLike, proposedPrice: BigNumberish, weight: BigNumberish];
+      export type OutputTuple = [voter: string, proposedPrice: bigint, weight: bigint];
+      export interface OutputObject {voter: string, proposedPrice: bigint, weight: bigint };
+      export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>
+      export type Filter = TypedDeferredTopicFilter<Event>
+      export type Log = TypedEventLog<Event>
+      export type LogDescription = TypedLogDescription<Event>
+    }
+
+  
+
+    export namespace VotingEndedEvent {
+      export type InputTuple = [votingNumber: BigNumberish, endTime: BigNumberish];
+      export type OutputTuple = [votingNumber: bigint, endTime: bigint];
+      export interface OutputObject {votingNumber: bigint, endTime: bigint };
+      export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>
+      export type Filter = TypedDeferredTopicFilter<Event>
+      export type Log = TypedEventLog<Event>
+      export type LogDescription = TypedLogDescription<Event>
+    }
+
+  
+
+    export namespace VotingStartedEvent {
+      export type InputTuple = [votingNumber: BigNumberish, startTime: BigNumberish];
+      export type OutputTuple = [votingNumber: bigint, startTime: bigint];
+      export interface OutputObject {votingNumber: bigint, startTime: bigint };
       export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>
       export type Filter = TypedDeferredTopicFilter<Event>
       export type Log = TypedEventLog<Event>
@@ -191,7 +243,7 @@ decodeFunctionResult(functionFragment: 'votingStartedTime', data: BytesLike): Re
 
     
     balanceOf: TypedContractMethod<
-      [_owner: AddressLike, ],
+      [account: AddressLike, ],
       [bigint],
       'view'
     >
@@ -222,10 +274,34 @@ decodeFunctionResult(functionFragment: 'votingStartedTime', data: BytesLike): Re
     
 
     
+    currentWinningPrice: TypedContractMethod<
+      [],
+      [bigint],
+      'view'
+    >
+    
+
+    
+    currentWinningWeight: TypedContractMethod<
+      [],
+      [bigint],
+      'view'
+    >
+    
+
+    
     decimals: TypedContractMethod<
       [],
       [bigint],
       'view'
+    >
+    
+
+    
+    endVoting: TypedContractMethod<
+      [],
+      [void],
+      'nonpayable'
     >
     
 
@@ -239,7 +315,7 @@ decodeFunctionResult(functionFragment: 'votingStartedTime', data: BytesLike): Re
 
     
     initialize: TypedContractMethod<
-      [name: string, symbol: string, tokenPrice: BigNumberish, buyFee: BigNumberish, sellFee: BigNumberish, ],
+      [name: string, symbol: string, tokenPrice_: BigNumberish, buyFee: BigNumberish, sellFee: BigNumberish, ],
       [void],
       'nonpayable'
     >
@@ -254,8 +330,24 @@ decodeFunctionResult(functionFragment: 'votingStartedTime', data: BytesLike): Re
     
 
     
+    minTokenForStartVoting: TypedContractMethod<
+      [],
+      [bigint],
+      'view'
+    >
+    
+
+    
+    minTokensForVoting: TypedContractMethod<
+      [],
+      [bigint],
+      'view'
+    >
+    
+
+    
     mint: TypedContractMethod<
-      [to: AddressLike, amount: BigNumberish, ],
+      [account: AddressLike, amount: BigNumberish, ],
       [void],
       'nonpayable'
     >
@@ -265,6 +357,14 @@ decodeFunctionResult(functionFragment: 'votingStartedTime', data: BytesLike): Re
     name: TypedContractMethod<
       [],
       [string],
+      'view'
+    >
+    
+
+    
+    newTokenPrice: TypedContractMethod<
+      [],
+      [bigint],
       'view'
     >
     
@@ -318,6 +418,14 @@ decodeFunctionResult(functionFragment: 'votingStartedTime', data: BytesLike): Re
     
 
     
+    startVoting: TypedContractMethod<
+      [],
+      [void],
+      'nonpayable'
+    >
+    
+
+    
     symbol: TypedContractMethod<
       [],
       [string],
@@ -327,14 +435,6 @@ decodeFunctionResult(functionFragment: 'votingStartedTime', data: BytesLike): Re
 
     
     timeToVote: TypedContractMethod<
-      [],
-      [bigint],
-      'view'
-    >
-    
-
-    
-    tokenPrice: TypedContractMethod<
       [],
       [bigint],
       'view'
@@ -374,8 +474,24 @@ decodeFunctionResult(functionFragment: 'votingStartedTime', data: BytesLike): Re
     
 
     
+    vote: TypedContractMethod<
+      [price: BigNumberish, ],
+      [void],
+      'nonpayable'
+    >
+    
+
+    
+    votes: TypedContractMethod<
+      [arg0: BigNumberish, arg1: BigNumberish, ],
+      [bigint],
+      'view'
+    >
+    
+
+    
     votingActive: TypedContractMethod<
-      [],
+      [timeToVote_: BigNumberish, votingStartedTime_: BigNumberish, ],
       [boolean],
       'view'
     >
@@ -416,7 +532,7 @@ getFunction(nameOrSignature: 'approve'): TypedContractMethod<
       'nonpayable'
     >;
 getFunction(nameOrSignature: 'balanceOf'): TypedContractMethod<
-      [_owner: AddressLike, ],
+      [account: AddressLike, ],
       [bigint],
       'view'
     >;
@@ -435,10 +551,25 @@ getFunction(nameOrSignature: 'buyFee'): TypedContractMethod<
       [bigint],
       'view'
     >;
+getFunction(nameOrSignature: 'currentWinningPrice'): TypedContractMethod<
+      [],
+      [bigint],
+      'view'
+    >;
+getFunction(nameOrSignature: 'currentWinningWeight'): TypedContractMethod<
+      [],
+      [bigint],
+      'view'
+    >;
 getFunction(nameOrSignature: 'decimals'): TypedContractMethod<
       [],
       [bigint],
       'view'
+    >;
+getFunction(nameOrSignature: 'endVoting'): TypedContractMethod<
+      [],
+      [void],
+      'nonpayable'
     >;
 getFunction(nameOrSignature: 'hasVoted'): TypedContractMethod<
       [arg0: BigNumberish, arg1: AddressLike, ],
@@ -446,7 +577,7 @@ getFunction(nameOrSignature: 'hasVoted'): TypedContractMethod<
       'view'
     >;
 getFunction(nameOrSignature: 'initialize'): TypedContractMethod<
-      [name: string, symbol: string, tokenPrice: BigNumberish, buyFee: BigNumberish, sellFee: BigNumberish, ],
+      [name: string, symbol: string, tokenPrice_: BigNumberish, buyFee: BigNumberish, sellFee: BigNumberish, ],
       [void],
       'nonpayable'
     >;
@@ -455,14 +586,29 @@ getFunction(nameOrSignature: 'lastBurnTime'): TypedContractMethod<
       [bigint],
       'view'
     >;
+getFunction(nameOrSignature: 'minTokenForStartVoting'): TypedContractMethod<
+      [],
+      [bigint],
+      'view'
+    >;
+getFunction(nameOrSignature: 'minTokensForVoting'): TypedContractMethod<
+      [],
+      [bigint],
+      'view'
+    >;
 getFunction(nameOrSignature: 'mint'): TypedContractMethod<
-      [to: AddressLike, amount: BigNumberish, ],
+      [account: AddressLike, amount: BigNumberish, ],
       [void],
       'nonpayable'
     >;
 getFunction(nameOrSignature: 'name'): TypedContractMethod<
       [],
       [string],
+      'view'
+    >;
+getFunction(nameOrSignature: 'newTokenPrice'): TypedContractMethod<
+      [],
+      [bigint],
       'view'
     >;
 getFunction(nameOrSignature: 'owner'): TypedContractMethod<
@@ -495,17 +641,17 @@ getFunction(nameOrSignature: 'setSellFee'): TypedContractMethod<
       [void],
       'nonpayable'
     >;
+getFunction(nameOrSignature: 'startVoting'): TypedContractMethod<
+      [],
+      [void],
+      'nonpayable'
+    >;
 getFunction(nameOrSignature: 'symbol'): TypedContractMethod<
       [],
       [string],
       'view'
     >;
 getFunction(nameOrSignature: 'timeToVote'): TypedContractMethod<
-      [],
-      [bigint],
-      'view'
-    >;
-getFunction(nameOrSignature: 'tokenPrice'): TypedContractMethod<
       [],
       [bigint],
       'view'
@@ -530,8 +676,18 @@ getFunction(nameOrSignature: 'transferOwnership'): TypedContractMethod<
       [void],
       'nonpayable'
     >;
+getFunction(nameOrSignature: 'vote'): TypedContractMethod<
+      [price: BigNumberish, ],
+      [void],
+      'nonpayable'
+    >;
+getFunction(nameOrSignature: 'votes'): TypedContractMethod<
+      [arg0: BigNumberish, arg1: BigNumberish, ],
+      [bigint],
+      'view'
+    >;
 getFunction(nameOrSignature: 'votingActive'): TypedContractMethod<
-      [],
+      [timeToVote_: BigNumberish, votingStartedTime_: BigNumberish, ],
       [boolean],
       'view'
     >;
@@ -551,6 +707,9 @@ getEvent(key: 'Buy'): TypedContractEvent<BuyEvent.InputTuple, BuyEvent.OutputTup
 getEvent(key: 'Initialized'): TypedContractEvent<InitializedEvent.InputTuple, InitializedEvent.OutputTuple, InitializedEvent.OutputObject>;
 getEvent(key: 'OwnershipTransferred'): TypedContractEvent<OwnershipTransferredEvent.InputTuple, OwnershipTransferredEvent.OutputTuple, OwnershipTransferredEvent.OutputObject>;
 getEvent(key: 'Transfer'): TypedContractEvent<TransferEvent.InputTuple, TransferEvent.OutputTuple, TransferEvent.OutputObject>;
+getEvent(key: 'Vote'): TypedContractEvent<VoteEvent.InputTuple, VoteEvent.OutputTuple, VoteEvent.OutputObject>;
+getEvent(key: 'VotingEnded'): TypedContractEvent<VotingEndedEvent.InputTuple, VotingEndedEvent.OutputTuple, VotingEndedEvent.OutputObject>;
+getEvent(key: 'VotingStarted'): TypedContractEvent<VotingStartedEvent.InputTuple, VotingStartedEvent.OutputTuple, VotingStartedEvent.OutputObject>;
 
     filters: {
       
@@ -572,6 +731,18 @@ getEvent(key: 'Transfer'): TypedContractEvent<TransferEvent.InputTuple, Transfer
 
       'Transfer(address,address,uint256)': TypedContractEvent<TransferEvent.InputTuple, TransferEvent.OutputTuple, TransferEvent.OutputObject>;
       Transfer: TypedContractEvent<TransferEvent.InputTuple, TransferEvent.OutputTuple, TransferEvent.OutputObject>;
+    
+
+      'Vote(address,uint256,uint256)': TypedContractEvent<VoteEvent.InputTuple, VoteEvent.OutputTuple, VoteEvent.OutputObject>;
+      Vote: TypedContractEvent<VoteEvent.InputTuple, VoteEvent.OutputTuple, VoteEvent.OutputObject>;
+    
+
+      'VotingEnded(uint256,uint256)': TypedContractEvent<VotingEndedEvent.InputTuple, VotingEndedEvent.OutputTuple, VotingEndedEvent.OutputObject>;
+      VotingEnded: TypedContractEvent<VotingEndedEvent.InputTuple, VotingEndedEvent.OutputTuple, VotingEndedEvent.OutputObject>;
+    
+
+      'VotingStarted(uint256,uint256)': TypedContractEvent<VotingStartedEvent.InputTuple, VotingStartedEvent.OutputTuple, VotingStartedEvent.OutputObject>;
+      VotingStarted: TypedContractEvent<VotingStartedEvent.InputTuple, VotingStartedEvent.OutputTuple, VotingStartedEvent.OutputObject>;
     
     };
   }

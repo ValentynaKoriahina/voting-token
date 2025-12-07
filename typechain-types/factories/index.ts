@@ -3,7 +3,6 @@
 /* eslint-disable */
 export * as appProxyAdminSol from './AppProxyAdmin.sol/index.js';
 export * as appTransparentUpgradeableProxySol from './AppTransparentUpgradeableProxy.sol/index.js';
-export * as commonRulesSol from './CommonRules.sol/index.js';
 export * as erc20Sol from './ERC20.sol/index.js';
 export * as tradableSol from './Tradable.sol/index.js';
 export * as votingSol from './Voting.sol/index.js';

@@ -1,6 +1,4 @@
 import { expect } from "chai";
-import { network } from "hardhat";
-const { ethers } = await network.connect();
 import { deployVotingTokenProxy } from "./helpers/deployVotingTokenProxy.js";
 
 let token: any;
@@ -9,44 +7,34 @@ let addr1: any;
 let addr2: any;
 let addr3: any;
 
-// ========================================================
-// VotingToken - Additional requirements (buy())
-// ========================================================
-describe("Vote", function () {
-  const tokenPrice = ethers.parseEther("0.002");
-  const buyFee = 500;
-  const sellFee = 500;
+let ethers: any;
+let buyFee: bigint = 200n;
+let sellFee: bigint = 100n;
+let tokenPriceValue: string = "0.002";
 
-  before(async function () {
-    const deployed = await deployVotingTokenProxy();
-    [admin, addr1, addr2, addr3] = deployed.signers;
-    token = deployed.token;
-
-    // если нужно, можно выставить прайс/фии тут, если это не делается в deployVotingTokenProxy
-    // await token.connect(admin).setTokenPrice(tokenPrice);
-    // await token.connect(admin).setBuyFee(buyFee);
-    // await token.connect(admin).setSellFee(sellFee);
-  });
-
- // ========================================================
-// VotingToken - startVoting()
-// ========================================================
 describe("VotingToken - startVoting()", function () {
   let receipt: any;
   let blockTime: bigint;
 
   beforeEach(async function () {
-    const deployed = await deployVotingTokenProxy();
+    const deployed = await deployVotingTokenProxy(
+      tokenPriceValue,
+      buyFee,
+      sellFee
+    );
+
     [admin, addr1, addr2, addr3] = deployed.signers;
     token = deployed.token;
+    ethers = deployed.ethers;
 
-    const amountToMint = 100n;
-    await token.connect(admin).mint(addr1.address, amountToMint);
+    const amountToMint = ethers.parseEther("100");
+    await token.connect(admin).mint(admin.address, amountToMint);
 
-    const tx = await token.connect(addr1).startVoting();
+    const tx = await token.connect(admin).startVoting();
     receipt = await tx.wait();
 
     const block = await ethers.provider.getBlock(receipt.blockNumber);
+
     blockTime = BigInt(block!.timestamp);
   });
 
@@ -69,22 +57,45 @@ describe("VotingToken - startVoting()", function () {
   });
 });
 
-// ========================================================
-// VotingToken - vote()
-// ========================================================
 describe("VotingToken - vote()", function () {
-  let receipt: any;
+  before(async function () {
+    const deployed = await deployVotingTokenProxy(
+      tokenPriceValue,
+      buyFee,
+      sellFee
+    );
 
-  beforeEach(async function () {
-    const deployed = await deployVotingTokenProxy();
     [admin, addr1, addr2, addr3] = deployed.signers;
     token = deployed.token;
+    ethers = deployed.ethers;
 
-    await token.connect(admin).mint(addr1.address, 100n);
+    const amountToMint = ethers.parseEther("100");
+    await token.connect(admin).mint(admin.address, amountToMint);
 
-    await token.connect(addr1).startVoting();
-    const tx = await token.connect(addr1).vote(ethers.parseEther("0.11"));
-    receipt = await tx.wait();
+    const tx = await token.connect(admin).mint(admin.address, amountToMint);
+    await tx.wait();
+
+    await token.connect(admin).startVoting();
+  });
+
+  it("Vote transaction succeeds only if user holds ≥ 0.05 % of total supply", async function () {
+    const balance = await token.balanceOf(addr1.address);
+    console.log("Token balance of addr1:", balance.toString());
+    const totalSupply = await token.totalSupply();
+    console.log("totalSupply (wei):", totalSupply);
+    const minTokensForVoting = await token.minTokensForVoting();
+    console.log("minTokensForVoting", minTokensForVoting);
+
+    await expect(
+      token.connect(addr1).vote(ethers.parseEther("0.21"))
+    ).to.be.revertedWithCustomError(token, "InsufficientTokens");
+
+    const fundAmount = minTokensForVoting + 1n;
+    await token.connect(admin).transfer(addr1.address, fundAmount);
+
+    await expect(
+      token.connect(addr1).vote(ethers.parseEther("0.12"))
+    ).to.not.be.revertedWithCustomError(token, "InsufficientTokens");
   });
 
   it("Should prevent double participation through transfer", async function () {
@@ -92,33 +103,26 @@ describe("VotingToken - vote()", function () {
       token.connect(addr1).transfer(addr2.address, 5n)
     ).to.be.revertedWithCustomError(token, "LockedUntilVotingEnds");
   });
-
-  it("Vote transaction succeeds only if user holds ≥ 0.05 % of total supply", async function () {
-    await expect(
-      token.connect(addr2).vote(ethers.parseEther("0.21"))
-    ).to.be.revertedWithCustomError(token, "InsufficientTokens");
-
-    await expect(
-      token.connect(addr1).vote(ethers.parseEther("0.12"))
-    ).to.not.be.revertedWithCustomError(token, "InsufficientTokens");
-  });
 });
 
-// ========================================================
-// VotingToken - endVoting()
-// ========================================================
 describe("VotingToken - endVoting()", function () {
   let timeToVote: bigint;
-  const amountToMint = 100000n;
 
   beforeEach(async function () {
-    const deployed = await deployVotingTokenProxy();
+    const deployed = await deployVotingTokenProxy(
+      tokenPriceValue,
+      buyFee,
+      sellFee
+    );
+
     [admin, addr1, addr2, addr3] = deployed.signers;
     token = deployed.token;
+    ethers = deployed.ethers;
 
-    await token.connect(admin).mint(addr1.address, amountToMint);
+    const amountToMint = ethers.parseEther("100000");
+    await token.connect(admin).mint(admin.address, amountToMint);
 
-    const tx = await token.connect(addr1).startVoting();
+    const tx = await token.connect(admin).startVoting();
     await tx.wait();
 
     timeToVote = await token.timeToVote();

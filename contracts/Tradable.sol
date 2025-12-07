@@ -16,7 +16,6 @@ abstract contract Tradable is CommonRules {
         uint256 amount
     ) internal virtual;
 
-    uint256 public tokenPrice; // wei
     uint256 public buyFee;
     uint256 public sellFee;
     uint256 public lastBurnTime;
@@ -33,11 +32,9 @@ abstract contract Tradable is CommonRules {
     );
 
     function _initializeTradable(
-        uint256 tokenPrice_,
         uint256 buyFee_,
         uint256 sellFee_
     ) internal {
-        tokenPrice = tokenPrice_;
         buyFee = buyFee_;
         sellFee = sellFee_;
         lastBurnTime = block.timestamp;
@@ -46,7 +43,7 @@ abstract contract Tradable is CommonRules {
     function buy() public payable notFrozen(msg.sender) {
         if (msg.value == 0) revert NoETHsent();
 
-        uint256 tokens = (msg.value * 1e18) / tokenPrice;
+        uint256 tokens = (msg.value * 1e18) / _tokenPrice();
 
         uint256 fee = (tokens * buyFee) / fee_denominator;
         uint256 netTokens = tokens - fee;

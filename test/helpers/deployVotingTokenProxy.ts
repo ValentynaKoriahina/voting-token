@@ -1,23 +1,20 @@
 import { network } from "hardhat";
 const { ethers } = await network.connect();
 
-/**
- * Deploys:
- *  - VotingToken (implementation)
- *  - AppProxyAdmin
- *  - AppTransparentUpgradeableProxy
- * Initializes VotingToken through proxy.
- */
-export async function deployVotingTokenProxy() {
+export async function deployVotingTokenProxy(
+  _tokenPrice: string,
+  _buyFee: bigint,
+  _sellFee: bigint
+) {
   const signers = await ethers.getSigners();
   const [admin] = signers;
 
   const name = "VotingToken";
   const symbol = "VT";
   const decimals = 18;
-  const tokenPrice = ethers.parseEther("0.002");
-  const buyFee = 500;
-  const sellFee = 500;
+  let tokenPrice = ethers.parseEther(_tokenPrice);
+  let buyFee = _buyFee;
+  let sellFee = _sellFee;
 
   //
   // 1. Deploy implementation
@@ -73,5 +70,7 @@ export async function deployVotingTokenProxy() {
     name,
     symbol,
     decimals,
+    ethers,
+    tokenPrice
   };
 }

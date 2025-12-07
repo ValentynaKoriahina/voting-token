@@ -6,8 +6,16 @@ describe("VotingToken via Transparent Proxy", function () {
   let addr1: any;
   let token: any;
 
+  let buyFee: bigint = 200n;
+  let sellFee: bigint = 100n;
+  let tokenPriceValue: string = "0.002";
+
   before(async function () {
-    const deployed = await deployVotingTokenProxy();
+    const deployed = await deployVotingTokenProxy(
+      tokenPriceValue,
+      buyFee,
+      sellFee
+    );
     [admin, addr1] = deployed.signers;
 
     token = deployed.token;
